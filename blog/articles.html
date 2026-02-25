@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="所有文章 - Eric's Blog">
+    <title>文章列表 - Eric's Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span class="logo-icon">✦</span><span>Eric's Blog</span></a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">首页</a>
+                <a href="articles.html" class="nav-link active">文章</a>
+                <a href="categories.html" class="nav-link">分类</a>
+                <a href="about.html" class="nav-link">关于</a>
+            </div>
+            <div class="nav-actions">
+                <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-modal" id="searchModal">
+        <div class="search-modal-content">
+            <div class="search-header">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索文章...">
+                <button class="close-search" id="closeSearch"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-results" id="searchResults">
+                <p class="search-hint">输入关键词开始搜索...</p>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content" style="padding-top: calc(var(--nav-height) + 3rem);">
+        <div class="container">
+            <header class="page-header">
+                <h1 class="page-title"><span class="title-icon">📝</span> 所有文章</h1>
+                <p class="page-subtitle">分享技术见解、项目经验与生活感悟</p>
+            </header>
+
+            <div class="articles-filter">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">全部</button>
+                    <button class="filter-tab" data-filter="技术">技术</button>
+                    <button class="filter-tab" data-filter="前端">前端</button>
+                    <button class="filter-tab" data-filter="后端">后端</button>
+                    <button class="filter-tab" data-filter="AI">AI</button>
+                    <button class="filter-tab" data-filter="生活">生活</button>
+                </div>
+                <select class="sort-select" id="sortSelect">
+                    <option value="newest">最新发布</option>
+                    <option value="oldest">最早发布</option>
+                    <option value="popular">最受欢迎</option>
+                </select>
+            </div>
+
+            <div class="articles-list" id="articlesList"></div>
+
+            <div class="pagination">
+                <button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <span class="page-dots">...</span>
+                <button class="page-btn">10</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+                <p>&copy; 2026 Eric's Blog. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></button>
+    <script src="js/main.js"></script>
+    <script>
+        const allArticles = [
+            { id: 1, title: '深入理解 JavaScript 异步编程', excerpt: '从回调函数到 Promise，再到 async/await，全面解析 JavaScript 异步编程的演进历程和最佳实践...', category: '技术', date: '2026年2月1日', readTime: '10 分钟', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400', views: 1200, likes: 86 },
+            { id: 2, title: 'CSS Grid 布局完全指南', excerpt: '掌握现代 CSS 布局的核心技术，从基础概念到高级应用...', category: '前端', date: '2026年1月28日', readTime: '8 分钟', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400', views: 856, likes: 52 },
+            { id: 3, title: '我的 2025 年终总结', excerpt: '回顾过去一年的成长与收获，展望新的一年...', category: '生活', date: '2026年1月25日', readTime: '5 分钟', image: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400', views: 2100, likes: 128 },
+            { id: 4, title: 'Node.js 性能优化实战', excerpt: '深入探讨 Node.js 应用的性能优化策略...', category: '后端', date: '2026年1月20日', readTime: '8 分钟', image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400', views: 945, likes: 67 },
+            { id: 5, title: 'ChatGPT API 实战应用', excerpt: '学习如何在项目中集成 ChatGPT API...', category: 'AI', date: '2026年1月18日', readTime: '12 分钟', image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400', views: 1560, likes: 98 },
+            { id: 6, title: 'VS Code 效率提升技巧', excerpt: '分享我日常使用 VS Code 的一些效率技巧...', category: '工具', date: '2026年1月15日', readTime: '6 分钟', image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400', views: 780, likes: 45 },
+            { id: 7, title: 'React Hooks 深度解析', excerpt: '深入理解 React Hooks 的工作原理和最佳实践...', category: '前端', date: '2026年1月12日', readTime: '15 分钟', image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400', views: 1350, likes: 92 },
+            { id: 8, title: 'Docker 容器化部署指南', excerpt: '从零开始学习 Docker，掌握容器化部署...', category: '后端', date: '2026年1月10日', readTime: '10 分钟', image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400', views: 890, likes: 56 }
+        ];
+
+        function renderArticlesList(articles) {
+            const container = document.getElementById('articlesList');
+            container.innerHTML = articles.map(a => `
+                <article class="article-list-item">
+                    <div class="article-list-image">
+                        <img src="${a.image}" alt="${a.title}">
+                        <span class="article-category">${a.category}</span>
+                    </div>
+                    <div class="article-list-content">
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> ${a.date}</span>
+                            <span><i class="far fa-clock"></i> ${a.readTime}</span>
+                            <span><i class="far fa-eye"></i> ${a.views}</span>
+                            <span><i class="far fa-heart"></i> ${a.likes}</span>
+                        </div>
+                        <h3 class="article-title"><a href="article.html?id=${a.id}">${a.title}</a></h3>
+                        <p class="article-excerpt">${a.excerpt}</p>
+                        <a href="article.html?id=${a.id}" class="read-more">阅读全文 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // 初始化
+        renderArticlesList(allArticles);
+
+        // 筛选功能
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const filter = this.dataset.filter;
+                const filtered = filter === 'all' ? allArticles : allArticles.filter(a => a.category === filter);
+                renderArticlesList(filtered);
+            });
+        });
+    </script>
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        .articles-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius-full);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
+
+        .articles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .article-list-item {
+            display: flex;
+            gap: 1.5rem;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+        }
+
+        .article-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .article-list-image {
+            width: 280px;
+            height: 200px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .article-list-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+
+        .article-list-item:hover .article-list-image img {
+            transform: scale(1.05);
+        }
+
+        .article-list-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .article-list-content .article-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-list-content .article-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-list-content .article-title a {
+            transition: color var(--transition-fast);
+        }
+
+        .article-list-content .article-title a:hover {
+            color: var(--primary);
+        }
+
+        .article-list-content .article-excerpt {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .page-btn:hover:not(:disabled),
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-dots {
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .article-list-item {
+                flex-direction: column;
+            }
+
+            .article-list-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+    </style>
+</body>
+
+</html>
