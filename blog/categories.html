@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="文章分类 - Eric's Blog">
+    <title>分类 - Eric's Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span class="logo-icon">✦</span><span>Eric's Blog</span></a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">首页</a>
+                <a href="articles.html" class="nav-link">文章</a>
+                <a href="categories.html" class="nav-link active">分类</a>
+                <a href="about.html" class="nav-link">关于</a>
+            </div>
+            <div class="nav-actions">
+                <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" style="padding-top: calc(var(--nav-height) + 3rem);">
+        <div class="container">
+            <header class="page-header">
+                <h1 class="page-title"><span class="title-icon">📂</span> 文章分类</h1>
+                <p class="page-subtitle">按主题浏览所有文章</p>
+            </header>
+
+            <div class="categories-showcase">
+                <div class="category-showcase-card" data-category="frontend">
+                    <div class="showcase-icon"><i class="fab fa-js-square"></i></div>
+                    <div class="showcase-content">
+                        <h2>前端开发</h2>
+                        <p>JavaScript, CSS, React, Vue.js 等前端技术文章</p>
+                        <div class="showcase-stats">
+                            <span><i class="fas fa-file-alt"></i> 15 篇文章</span>
+                            <span><i class="fas fa-eye"></i> 12.5k 阅读</span>
+                        </div>
+                    </div>
+                    <div class="showcase-articles">
+                        <div class="mini-article">
+                            <span class="mini-title">深入理解 JavaScript 异步编程</span>
+                            <span class="mini-date">2月1日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">CSS Grid 布局完全指南</span>
+                            <span class="mini-date">1月28日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">React Hooks 深度解析</span>
+                            <span class="mini-date">1月12日</span>
+                        </div>
+                    </div>
+                    <a href="articles.html?cat=frontend" class="showcase-link">查看全部 <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="category-showcase-card" data-category="backend">
+                    <div class="showcase-icon"><i class="fas fa-server"></i></div>
+                    <div class="showcase-content">
+                        <h2>后端开发</h2>
+                        <p>Node.js, Python, 数据库, API 设计等后端技术</p>
+                        <div class="showcase-stats">
+                            <span><i class="fas fa-file-alt"></i> 12 篇文章</span>
+                            <span><i class="fas fa-eye"></i> 9.8k 阅读</span>
+                        </div>
+                    </div>
+                    <div class="showcase-articles">
+                        <div class="mini-article">
+                            <span class="mini-title">Node.js 性能优化实战</span>
+                            <span class="mini-date">1月20日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">Docker 容器化部署指南</span>
+                            <span class="mini-date">1月10日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">MongoDB vs PostgreSQL 对比</span>
+                            <span class="mini-date">1月8日</span>
+                        </div>
+                    </div>
+                    <a href="articles.html?cat=backend" class="showcase-link">查看全部 <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="category-showcase-card" data-category="ai">
+                    <div class="showcase-icon"><i class="fas fa-robot"></i></div>
+                    <div class="showcase-content">
+                        <h2>人工智能</h2>
+                        <p>机器学习, 深度学习, LLM, AI 应用开发</p>
+                        <div class="showcase-stats">
+                            <span><i class="fas fa-file-alt"></i> 8 篇文章</span>
+                            <span><i class="fas fa-eye"></i> 15.2k 阅读</span>
+                        </div>
+                    </div>
+                    <div class="showcase-articles">
+                        <div class="mini-article">
+                            <span class="mini-title">ChatGPT API 实战应用</span>
+                            <span class="mini-date">1月18日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">LangChain 入门教程</span>
+                            <span class="mini-date">1月5日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">Prompt Engineering 技巧</span>
+                            <span class="mini-date">12月28日</span>
+                        </div>
+                    </div>
+                    <a href="articles.html?cat=ai" class="showcase-link">查看全部 <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="category-showcase-card" data-category="devops">
+                    <div class="showcase-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="showcase-content">
+                        <h2>DevOps</h2>
+                        <p>CI/CD, 云服务, 容器化, 自动化运维</p>
+                        <div class="showcase-stats">
+                            <span><i class="fas fa-file-alt"></i> 5 篇文章</span>
+                            <span><i class="fas fa-eye"></i> 6.3k 阅读</span>
+                        </div>
+                    </div>
+                    <div class="showcase-articles">
+                        <div class="mini-article">
+                            <span class="mini-title">GitHub Actions 实战指南</span>
+                            <span class="mini-date">12月20日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">Kubernetes 入门到实践</span>
+                            <span class="mini-date">12月15日</span>
+                        </div>
+                    </div>
+                    <a href="articles.html?cat=devops" class="showcase-link">查看全部 <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="category-showcase-card" data-category="life">
+                    <div class="showcase-icon"><i class="fas fa-coffee"></i></div>
+                    <div class="showcase-content">
+                        <h2>生活随笔</h2>
+                        <p>年终总结, 成长思考, 读书笔记, 生活感悟</p>
+                        <div class="showcase-stats">
+                            <span><i class="fas fa-file-alt"></i> 6 篇文章</span>
+                            <span><i class="fas fa-eye"></i> 8.1k 阅读</span>
+                        </div>
+                    </div>
+                    <div class="showcase-articles">
+                        <div class="mini-article">
+                            <span class="mini-title">我的 2025 年终总结</span>
+                            <span class="mini-date">1月25日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">程序员的自我修养</span>
+                            <span class="mini-date">1月12日</span>
+                        </div>
+                    </div>
+                    <a href="articles.html?cat=life" class="showcase-link">查看全部 <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="category-showcase-card" data-category="tools">
+                    <div class="showcase-icon"><i class="fas fa-tools"></i></div>
+                    <div class="showcase-content">
+                        <h2>工具推荐</h2>
+                        <p>开发工具, 效率软件, 实用技巧推荐</p>
+                        <div class="showcase-stats">
+                            <span><i class="fas fa-file-alt"></i> 4 篇文章</span>
+                            <span><i class="fas fa-eye"></i> 4.5k 阅读</span>
+                        </div>
+                    </div>
+                    <div class="showcase-articles">
+                        <div class="mini-article">
+                            <span class="mini-title">VS Code 效率提升技巧</span>
+                            <span class="mini-date">1月15日</span>
+                        </div>
+                        <div class="mini-article">
+                            <span class="mini-title">我的 Mac 开发环境配置</span>
+                            <span class="mini-date">12月10日</span>
+                        </div>
+                    </div>
+                    <a href="articles.html?cat=tools" class="showcase-link">查看全部 <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- 标签云 -->
+            <section class="tags-section">
+                <h2><span class="title-icon">🏷️</span> 热门标签</h2>
+                <div class="tags-cloud">
+                    <a href="#" class="cloud-tag size-lg">JavaScript</a>
+                    <a href="#" class="cloud-tag size-md">React</a>
+                    <a href="#" class="cloud-tag size-sm">Node.js</a>
+                    <a href="#" class="cloud-tag size-lg">AI</a>
+                    <a href="#" class="cloud-tag size-md">ChatGPT</a>
+                    <a href="#" class="cloud-tag size-sm">Docker</a>
+                    <a href="#" class="cloud-tag size-md">CSS</a>
+                    <a href="#" class="cloud-tag size-sm">TypeScript</a>
+                    <a href="#" class="cloud-tag size-lg">Vue.js</a>
+                    <a href="#" class="cloud-tag size-sm">Python</a>
+                    <a href="#" class="cloud-tag size-md">性能优化</a>
+                    <a href="#" class="cloud-tag size-sm">API</a>
+                    <a href="#" class="cloud-tag size-md">数据库</a>
+                    <a href="#" class="cloud-tag size-sm">Git</a>
+                    <a href="#" class="cloud-tag size-lg">效率</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+                <p>&copy; 2026 Eric's Blog. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></button>
+    <script src="js/main.js"></script>
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        .categories-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .category-showcase-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-showcase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .showcase-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .showcase-icon i {
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .showcase-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .showcase-content p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            margin-bottom: 1rem;
+        }
+
+        .showcase-stats {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .showcase-stats i {
+            margin-right: 0.25rem;
+        }
+
+        .showcase-articles {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .mini-article {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border-light);
+        }
+
+        .mini-article:last-child {
+            border-bottom: none;
+        }
+
+        .mini-title {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .mini-date {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .showcase-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-weight: 500;
+            transition: gap var(--transition-fast);
+        }
+
+        .showcase-link:hover {
+            gap: 0.75rem;
+        }
+
+        .tags-section {
+            margin-bottom: 3rem;
+        }
+
+        .tags-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tags-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .cloud-tag {
+            background: var(--bg-tertiary);
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
+        }
+
+        .cloud-tag:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .cloud-tag.size-sm {
+            font-size: 0.8125rem;
+        }
+
+        .cloud-tag.size-md {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .cloud-tag.size-lg {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .categories-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+
+</html>

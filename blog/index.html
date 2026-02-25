@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Eric的个人博客 - 分享技术、生活与思考">
+    <title>Eric's Blog - 个人博客</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span class="logo-icon">✦</span><span>Eric's Blog</span></a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link active">首页</a>
+                <a href="articles.html" class="nav-link">文章</a>
+                <a href="categories.html" class="nav-link">分类</a>
+                <a href="about.html" class="nav-link">关于</a>
+            </div>
+            <div class="nav-actions">
+                <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-modal" id="searchModal">
+        <div class="search-modal-content">
+            <div class="search-header">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索文章...">
+                <button class="close-search" id="closeSearch"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-results" id="searchResults">
+                <p class="search-hint">输入关键词开始搜索...</p>
+            </div>
+        </div>
+    </div>
+
+    <header class="hero">
+        <div class="hero-background">
+            <div class="hero-gradient"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Eric" alt="Avatar"></div>
+            <h1 class="hero-title"><span class="greeting" id="greeting">你好</span>，欢迎来到我的博客</h1>
+            <p class="hero-subtitle">分享技术、生活与思考 | 记录成长的每一步</p>
+            <div class="hero-stats">
+                <div class="stat-item"><span class="stat-number" data-count="42">0</span><span
+                        class="stat-label">文章</span></div>
+                <div class="stat-item"><span class="stat-number" data-count="8">0</span><span
+                        class="stat-label">分类</span></div>
+                <div class="stat-item"><span class="stat-number" data-count="1280">0</span><span
+                        class="stat-label">访客</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="section featured-section" id="featured">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="title-icon">🔥</span>精选文章</h2>
+                    <a href="articles.html" class="view-all">查看全部 <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="featured-grid">
+                    <article class="featured-card featured-main">
+                        <div class="card-image"><img
+                                src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800" alt="编程"></div>
+                        <div class="card-content">
+                            <div class="card-meta"><span class="card-category">技术</span><span
+                                    class="card-date">2026年2月1日</span></div>
+                            <h3 class="card-title">深入理解 JavaScript 异步编程</h3>
+                            <p class="card-excerpt">从回调函数到 Promise，再到 async/await，全面解析 JavaScript 异步编程...</p>
+                            <a href="article.html" class="read-more">阅读更多 →</a>
+                        </div>
+                    </article>
+                    <article class="featured-card">
+                        <div class="card-image"><img
+                                src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400" alt="代码"></div>
+                        <div class="card-content">
+                            <div class="card-meta"><span class="card-category">前端</span><span
+                                    class="card-date">2026年1月28日</span></div>
+                            <h3 class="card-title">CSS Grid 布局完全指南</h3>
+                            <a href="article.html" class="read-more">阅读更多 →</a>
+                        </div>
+                    </article>
+                    <article class="featured-card">
+                        <div class="card-image"><img
+                                src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400" alt="设计"></div>
+                        <div class="card-content">
+                            <div class="card-meta"><span class="card-category">生活</span><span
+                                    class="card-date">2026年1月25日</span></div>
+                            <h3 class="card-title">我的 2025 年终总结</h3>
+                            <a href="article.html" class="read-more">阅读更多 →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section latest-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="title-icon">📝</span>最新文章</h2>
+                </div>
+                <div class="articles-grid" id="articlesGrid"></div>
+                <div class="load-more-container"><button class="load-more-btn" id="loadMoreBtn">加载更多</button></div>
+            </div>
+        </section>
+
+        <section class="section categories-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><span class="title-icon">📂</span>文章分类</h2>
+                </div>
+                <div class="categories-grid">
+                    <a href="categories.html?cat=frontend" class="category-card"><i class="fab fa-js-square"></i>
+                        <h3>前端开发</h3><span>15 篇</span>
+                    </a>
+                    <a href="categories.html?cat=backend" class="category-card"><i class="fas fa-server"></i>
+                        <h3>后端开发</h3><span>12 篇</span>
+                    </a>
+                    <a href="categories.html?cat=ai" class="category-card"><i class="fas fa-robot"></i>
+                        <h3>人工智能</h3><span>8 篇</span>
+                    </a>
+                    <a href="categories.html?cat=devops" class="category-card"><i class="fas fa-cogs"></i>
+                        <h3>DevOps</h3><span>5 篇</span>
+                    </a>
+                    <a href="categories.html?cat=life" class="category-card"><i class="fas fa-coffee"></i>
+                        <h3>生活随笔</h3><span>6 篇</span>
+                    </a>
+                    <a href="categories.html?cat=tools" class="category-card"><i class="fas fa-tools"></i>
+                        <h3>工具推荐</h3><span>4 篇</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section subscribe-section">
+            <div class="container">
+                <div class="subscribe-card">
+                    <h2>📬 订阅我的博客</h2>
+                    <p>获取最新文章更新，不错过任何精彩内容</p>
+                    <form class="subscribe-form" id="subscribeForm">
+                        <input type="email" placeholder="输入您的邮箱" required>
+                        <button type="submit">订阅 <i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo"><span class="logo-icon">✦</span> Eric's Blog</a>
+                    <p>记录技术成长，分享生活感悟</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>导航</h4><a href="index.html">首页</a><a href="articles.html">文章</a><a href="about.html">关于</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>分类</h4><a href="categories.html?cat=frontend">前端</a><a
+                            href="categories.html?cat=backend">后端</a><a href="categories.html?cat=ai">AI</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Eric's Blog. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></button>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
