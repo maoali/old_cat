@@ -1,19 +1,19 @@
 // ===== Built-in Model Presets =====
 const BUILTIN_PRESETS = {
-  'llama-7b': { params: 7, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 32, name: 'LLaMA-2 7B', group: 'LLaMA 系列' },
-  'llama-13b': { params: 13, layers: 40, hiddenDim: 5120, heads: 40, kvHeads: 40, name: 'LLaMA-2 13B', group: 'LLaMA 系列' },
-  'llama-70b': { params: 70, layers: 80, hiddenDim: 8192, heads: 64, kvHeads: 8, name: 'LLaMA-2 70B', group: 'LLaMA 系列' },
-  'llama3-8b': { params: 8, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 8, name: 'LLaMA-3 8B', group: 'LLaMA 系列' },
-  'llama3-70b': { params: 70, layers: 80, hiddenDim: 8192, heads: 64, kvHeads: 8, name: 'LLaMA-3 70B', group: 'LLaMA 系列' },
-  'llama3-405b': { params: 405, layers: 126, hiddenDim: 16384, heads: 128, kvHeads: 8, name: 'LLaMA-3.1 405B', group: 'LLaMA 系列' },
-  'qwen2-7b': { params: 7.6, layers: 28, hiddenDim: 3584, heads: 28, kvHeads: 4, name: 'Qwen-2.5 7B', group: 'Qwen 系列' },
-  'qwen2-14b': { params: 14.7, layers: 48, hiddenDim: 5120, heads: 40, kvHeads: 8, name: 'Qwen-2.5 14B', group: 'Qwen 系列' },
-  'qwen2-72b': { params: 72.7, layers: 80, hiddenDim: 8192, heads: 64, kvHeads: 8, name: 'Qwen-2.5 72B', group: 'Qwen 系列' },
-  'mistral-7b': { params: 7.2, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 8, name: 'Mistral 7B', group: 'Mistral 系列' },
-  'mixtral-8x7b': { params: 46.7, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 8, name: 'Mixtral 8×7B (MoE)', group: 'Mistral 系列', numExperts: 8, expertsPerToken: 2 },
-  'deepseek-v3': { params: 671, layers: 61, hiddenDim: 7168, heads: 128, kvHeads: 128, name: 'DeepSeek-V3 671B (MoE)', group: 'DeepSeek 系列', numExperts: 256, expertsPerToken: 8 },
-  'deepseek-r1': { params: 671, layers: 61, hiddenDim: 7168, heads: 128, kvHeads: 128, name: 'DeepSeek-R1 671B (MoE)', group: 'DeepSeek 系列', numExperts: 256, expertsPerToken: 8 },
-  'glm-5': { params: 753.9, layers: 78, hiddenDim: 6144, heads: 64, kvHeads: 64, name: 'GLM-5 744B (MoE)', group: 'GLM 系列', numExperts: 256, expertsPerToken: 8 },
+  'llama-7b': { params: 7, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 32, weightBytes: 2, maxSeqLen: 4096, name: 'LLaMA-2 7B', group: 'LLaMA 系列' },
+  'llama-13b': { params: 13, layers: 40, hiddenDim: 5120, heads: 40, kvHeads: 40, weightBytes: 2, maxSeqLen: 4096, name: 'LLaMA-2 13B', group: 'LLaMA 系列' },
+  'llama-70b': { params: 70, layers: 80, hiddenDim: 8192, heads: 64, kvHeads: 8, weightBytes: 2, maxSeqLen: 4096, name: 'LLaMA-2 70B', group: 'LLaMA 系列' },
+  'llama3-8b': { params: 8, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 8, weightBytes: 2, maxSeqLen: 8192, name: 'LLaMA-3 8B', group: 'LLaMA 系列' },
+  'llama3-70b': { params: 70, layers: 80, hiddenDim: 8192, heads: 64, kvHeads: 8, weightBytes: 2, maxSeqLen: 8192, name: 'LLaMA-3 70B', group: 'LLaMA 系列' },
+  'llama3-405b': { params: 405, layers: 126, hiddenDim: 16384, heads: 128, kvHeads: 8, weightBytes: 2, maxSeqLen: 131072, name: 'LLaMA-3.1 405B', group: 'LLaMA 系列' },
+  'qwen2-7b': { params: 7.6, layers: 28, hiddenDim: 3584, heads: 28, kvHeads: 4, weightBytes: 2, maxSeqLen: 131072, name: 'Qwen-2.5 7B', group: 'Qwen 系列' },
+  'qwen2-14b': { params: 14.7, layers: 48, hiddenDim: 5120, heads: 40, kvHeads: 8, weightBytes: 2, maxSeqLen: 131072, name: 'Qwen-2.5 14B', group: 'Qwen 系列' },
+  'qwen2-72b': { params: 72.7, layers: 80, hiddenDim: 8192, heads: 64, kvHeads: 8, weightBytes: 2, maxSeqLen: 131072, name: 'Qwen-2.5 72B', group: 'Qwen 系列' },
+  'mistral-7b': { params: 7.2, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 8, weightBytes: 2, maxSeqLen: 32768, name: 'Mistral 7B', group: 'Mistral 系列' },
+  'mixtral-8x7b': { params: 46.7, layers: 32, hiddenDim: 4096, heads: 32, kvHeads: 8, weightBytes: 2, maxSeqLen: 32768, name: 'Mixtral 8×7B (MoE)', group: 'Mistral 系列', numExperts: 8, expertsPerToken: 2 },
+  'deepseek-v3': { params: 671, layers: 61, hiddenDim: 7168, heads: 128, kvHeads: 128, weightBytes: 2, maxSeqLen: 163840, name: 'DeepSeek-V3 671B (MoE)', group: 'DeepSeek 系列', numExperts: 256, expertsPerToken: 8 },
+  'deepseek-r1': { params: 671, layers: 61, hiddenDim: 7168, heads: 128, kvHeads: 128, weightBytes: 2, maxSeqLen: 163840, name: 'DeepSeek-R1 671B (MoE)', group: 'DeepSeek 系列', numExperts: 256, expertsPerToken: 8 },
+  'glm-5': { params: 753.9, layers: 78, hiddenDim: 6144, heads: 64, kvHeads: 64, weightBytes: 2, maxSeqLen: 131072, name: 'GLM-5 744B (MoE)', group: 'GLM 系列', numExperts: 256, expertsPerToken: 8 },
 };
 
 // ===== GPU Database =====
@@ -127,6 +127,16 @@ els.preset.addEventListener('change', () => {
   els.numHeads.value = p.heads;
   els.numKvHeads.value = p.kvHeads;
 
+  // Auto-fill weight precision from config (torch_dtype)
+  if (p.weightBytes != null) {
+    els.weightPrecision.value = p.weightBytes;
+  }
+
+  // Auto-fill max context length from config (max_position_embeddings)
+  if (p.maxSeqLen && p.maxSeqLen > 0) {
+    els.seqLen.value = p.maxSeqLen;
+  }
+
   // MoE fields
   if (p.numExperts && p.numExperts > 0) {
     els.numExperts.value = p.numExperts;
@@ -141,6 +151,17 @@ els.preset.addEventListener('change', () => {
 
 // ===== HuggingFace Integration =====
 const HF_API_BASE = 'https://huggingface.co';
+
+// Map torch_dtype string → bytes per element
+function dtypeToBytes(dtype) {
+  if (!dtype) return null;
+  const d = dtype.toLowerCase();
+  if (d === 'float32' || d === 'fp32') return 4;
+  if (d === 'float16' || d === 'bfloat16' || d === 'fp16' || d === 'bf16') return 2;
+  if (d.startsWith('float8') || d === 'fp8' || d === 'int8') return 1;
+  if (d === 'int4' || d === 'nf4' || d === 'fp4') return 0.5;
+  return null; // unknown → keep default
+}
 
 function setHFStatus(message, type) {
   els.hfStatus.textContent = message;
@@ -228,6 +249,8 @@ async function fetchHFModels() {
           hiddenDim: config.hidden_size,
           heads: config.num_attention_heads,
           kvHeads: config.num_key_value_heads || config.num_attention_heads,
+          weightBytes: dtypeToBytes(config.torch_dtype),
+          maxSeqLen: config.max_position_embeddings || null,
           name: displayName,
           group: 'HuggingFace 热门',
           hfId: model.id,
