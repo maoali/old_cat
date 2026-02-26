@@ -26,6 +26,7 @@ const GPUS = [
   { name: 'A100 80GB', vram: 80 },
   { name: 'H100 80GB', vram: 80 },
   { name: 'H20 96GB', vram: 96 },
+  { name: 'H20 141GB', vram: 141 },
   { name: 'RTX PRO 6000', vram: 96 },
   { name: 'H200 141GB', vram: 141 },
   { name: 'B200 192GB', vram: 192 },
