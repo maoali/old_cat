@@ -45,6 +45,25 @@ npm start
 
 ---
 
+## 系统界面预览
+
+### 1. 登录界面
+![登录系统](public/images/login.png)
+
+### 2. 数据看板 (管理员视图)
+![数据看板](public/images/dashboard.png)
+
+### 3. 提交创新想法 (员工视图)
+![提交想法](public/images/create-idea.png)
+
+### 4. 想法状态流转看板
+![想法看板](public/images/kanban.png)
+
+### 5. 想法详情与多阶段评审
+![想法详情](public/images/idea-detail.png)
+
+---
+
 ## 演示账号与权限体系
 
 系统出厂时自动内置（Seed）了全角色生命周期的演示账号，**所有演示账号的密码统一为**：`demo123`。
