@@ -73,12 +73,32 @@ const els = {
   formulaOverhead: $('formula-overhead'),
   gpuList: $('gpu-list'),
   attentionInfo: $('attention-info'),
+  gpuPanelPlaceholder: $('gpu-panel-placeholder'),
+  gpuPanelContent: $('gpu-panel-content'),
   hfBtn: $('hf-update-btn'),
   hfStatus: $('hf-status'),
   numExperts: $('num-experts'),
   expertsPerToken: $('experts-per-token'),
+  presetNameDisplay: $('preset-name-display'),
   moeRow: $('moe-row'),
 };
+
+// ===== Preset Name Display =====
+function updatePresetNameDisplay(key) {
+  const el = els.presetNameDisplay;
+  if (!el) return;
+  if (!key || !allPresets[key]) {
+    el.textContent = '';
+    el.classList.remove('visible');
+    els.preset.removeAttribute('title');
+    return;
+  }
+  const name = allPresets[key].name || key;
+  el.textContent = name;
+  el.title = name;
+  el.classList.add('visible');
+  els.preset.title = name;
+}
 
 // ===== Dynamic Preset Rendering =====
 function renderPresetOptions() {
@@ -119,6 +139,7 @@ function renderPresetOptions() {
 // ===== Preset Loading =====
 els.preset.addEventListener('change', () => {
   const key = els.preset.value;
+  updatePresetNameDisplay(key);
   if (!key || !allPresets[key]) return;
   const p = allPresets[key];
   els.params.value = p.params;
@@ -396,14 +417,16 @@ function render(r) {
   els.placeholder.style.display = 'none';
   els.content.style.display = 'block';
 
+  // Show GPU panel
+  els.gpuPanelPlaceholder.style.display = 'none';
+  els.gpuPanelContent.style.display = 'block';
+
   els.content.style.animation = 'none';
   els.content.offsetHeight;
   els.content.style.animation = '';
 
   els.totalVram.textContent = formatGB(r.total);
-  const gpuCount80 = Math.ceil(r.total / 80);
-  const gpuCount24 = Math.ceil(r.total / 24);
-  els.totalSub.textContent = `≈ ${gpuCount80} × A100/H100 (80GB) | ≈ ${gpuCount24} × RTX 4090 (24GB)`;
+
 
   els.valWeights.textContent = formatGB(r.weightMem);
   els.valKv.textContent = formatGB(r.kvCache);
@@ -472,9 +495,8 @@ function renderGPUs(totalGB) {
     item.innerHTML = `
       <span class="gpu-name">${gpu.name}</span>
       <div class="gpu-bar-wrapper">
-        <div class="gpu-bar-fill ${className}" style="width: 0%">
-          <span class="gpu-bar-text">${statusText}</span>
-        </div>
+        <div class="gpu-bar-fill ${className}" style="width: 0%"></div>
+        <span class="gpu-bar-text">${statusText}</span>
       </div>
       <span class="gpu-capacity">${cardsNeeded === 1 ? gpu.vram + 'GB' : cardsNeeded + '×' + gpu.vram + 'GB'}</span>
     `;

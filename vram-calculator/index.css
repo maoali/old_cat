@@ -159,9 +159,31 @@ body {
   align-items: start;
 }
 
+.main-grid-3col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 1100px) {
+  .main-grid-3col {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gpu-panel {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 900px) {
   .main-grid {
     grid-template-columns: 1fr;
+  }
+
+  .main-grid-3col {
+    grid-template-columns: 1fr;
+  }
+
+  .gpu-panel {
+    grid-column: auto;
   }
 }
 
@@ -216,6 +238,28 @@ body {
 
 .preset-wrapper select {
   flex: 1;
+  min-width: 0;
+}
+
+/* Selected model full name display */
+.preset-name-display {
+  display: none;
+  margin-top: 6px;
+  padding: 5px 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--accent-bright);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.preset-name-display.visible {
+  display: block;
 }
 
 /* HuggingFace Update Button */
@@ -678,17 +722,31 @@ select {
 
 /* GPU Comparison */
 .gpu-comparison {
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
   padding: 16px;
 }
 
-.gpu-comparison h3 {
+/* GPU Panel placeholder & content */
+.gpu-panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  color: var(--text-muted);
+  gap: 12px;
+}
+
+.gpu-panel-placeholder p {
   font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 14px;
-  color: var(--text-secondary);
+}
+
+.gpu-panel-content {
+  padding: 16px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.gpu-panel-content .attention-info {
+  margin-top: 16px;
 }
 
 .gpu-list {
@@ -707,7 +765,7 @@ select {
 .gpu-name {
   font-size: 0.78rem;
   font-weight: 500;
-  width: 110px;
+  width: 90px;
   flex-shrink: 0;
   color: var(--text-secondary);
 }
@@ -749,15 +807,17 @@ select {
   font-size: 0.68rem;
   font-weight: 600;
   color: white;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .gpu-capacity {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--text-muted);
-  width: 48px;
+  width: 40px;
   text-align: right;
   flex-shrink: 0;
 }
