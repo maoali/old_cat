@@ -1,0 +1,34 @@
+# Enterprise Innovation Idea Management System
+
+## Planning
+- [x] Design system architecture
+- [x] Create implementation plan
+
+## Backend (Node.js + Express + SQLite)
+- [ ] Project scaffold & package.json
+- [ ] Database schema (SQLite)
+- [ ] Auth module (roles: employee, reviewer, expert, admin)
+- [ ] Idea CRUD APIs
+- [ ] Review workflow APIs
+- [ ] Evidence upload APIs
+- [ ] Expert evaluation APIs
+- [ ] Project establishment workflow APIs
+- [ ] Department management APIs
+- [ ] Dashboard/stats APIs
+
+## Frontend (HTML/CSS/JS)
+- [ ] Login page
+- [ ] Dashboard / Kanban page
+- [ ] Idea list page
+- [ ] Idea detail page (with timeline/status)
+- [ ] Create idea form
+- [ ] Review panel (for reviewers)
+- [ ] Evidence upload panel (for submitters)
+- [ ] Expert evaluation panel
+- [ ] Project establishment panel
+- [ ] Admin panel (user/dept management)
+
+## Verification
+- [ ] Test all user role flows
+- [ ] Verify kanban stats
+- [ ] Create walkthrough

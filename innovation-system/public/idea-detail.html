@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>想法详情 — 创新想法管理系统</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">💡</div>
+                <h2>创新想法管理系统</h2>
+                <p>企业内部创新驱动平台</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-label">主菜单</div>
+                    <a class="nav-item" href="/dashboard.html" data-page="dashboard"><span
+                            class="nav-icon">📊</span>数据看板</a>
+                    <a class="nav-item" href="/ideas.html" data-page="ideas"><span class="nav-icon">💡</span>创新想法</a>
+                    <a class="nav-item" href="/create-idea.html" data-page="create"><span
+                            class="nav-icon">➕</span>提交想法</a>
+                </div>
+                <div class="nav-section" data-role="reviewer,admin">
+                    <div class="nav-label">审核管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=pending_review" data-page="review"><span
+                            class="nav-icon">🔍</span>待审核想法</a>
+                </div>
+                <div class="nav-section" data-role="expert,admin">
+                    <div class="nav-label">专家评估</div>
+                    <a class="nav-item" href="/ideas.html?filter=evidence_submitted" data-page="evaluate"><span
+                            class="nav-icon">🏆</span>待评估想法</a>
+                </div>
+                <div class="nav-section" data-role="admin">
+                    <div class="nav-label">管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=project_pending" data-page="project"><span
+                            class="nav-icon">🚀</span>待立项想法</a>
+                    <a class="nav-item" href="/admin.html" data-page="admin"><span class="nav-icon">⚙️</span>系统管理</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">加载中</div>
+                        <div class="user-role" id="user-role-label"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="退出登录">⬡</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1 id="page-title">想法详情</h1>
+                <div class="header-actions">
+                    <a href="/ideas.html" class="btn btn-secondary btn-sm">← 返回列表</a>
+                </div>
+            </div>
+            <div class="page-body">
+                <div class="detail-layout" id="detail-layout">
+                    <div class="text-center text-muted" style="padding:60px">加载中…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal-overlay hidden" id="modal-review">
+        <div class="modal">
+            <h2>🔍 审核创新想法</h2>
+            <div class="form-group">
+                <label class="form-label">审核决定 <span class="required">*</span></label>
+                <div style="display:flex;gap:10px">
+                    <button class="btn btn-success" onclick="setDecision('approve')" id="btn-approve" style="flex:1">✅
+                        批准通过</button>
+                    <button class="btn btn-danger" onclick="setDecision('reject')" id="btn-reject" style="flex:1">❌
+                        驳回</button>
+                </div>
+                <input type="hidden" id="review-decision">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="review-comment">审核意见</label>
+                <textarea id="review-comment" class="form-control" rows="4" placeholder="请填写审核意见..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-review')">取消</button>
+                <button class="btn btn-primary" id="submit-review-btn" onclick="submitReview()">提交审核</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evidence Modal -->
+    <div class="modal-overlay hidden" id="modal-evidence">
+        <div class="modal">
+            <h2>📎 上传执行举证</h2>
+            <div class="form-group">
+                <label class="form-label" for="evidence-desc">举证说明 <span class="required">*</span></label>
+                <textarea id="evidence-desc" class="form-control" rows="3" placeholder="请描述执行情况、进展与成果..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">附件（可选，最大20MB）</label>
+                <div class="file-drop" id="file-drop-area" onclick="document.getElementById('evidence-file').click()">
+                    <div class="file-drop-icon">📁</div>
+                    <p>点击或拖拽文件到此处</p>
+                    <p class="text-sm" style="margin-top:4px">支持 PDF、Word、Excel、图片等格式</p>
+                </div>
+                <input type="file" id="evidence-file" class="hidden"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip">
+                <div id="file-selected" class="hidden file-selected">
+                    <span>📎</span>
+                    <span id="file-selected-name"></span>
+                    <button onclick="clearFile()"
+                        style="margin-left:auto;background:none;border:none;color:var(--red);cursor:pointer">✕</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-evidence')">取消</button>
+                <button class="btn btn-primary" onclick="submitEvidence()">提交举证</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluate Modal -->
+    <div class="modal-overlay hidden" id="modal-evaluate">
+        <div class="modal">
+            <h2>🏆 专家评估</h2>
+            <div class="form-group">
+                <label class="form-label">评估评分 (1-10) <span class="required">*</span></label>
+                <div style="display:flex;align-items:center;gap:16px;margin-top:4px">
+                    <div class="rating" id="rating-stars"></div>
+                    <span class="score-display" id="score-display">—</span>
+                </div>
+                <input type="hidden" id="eval-score" value="">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="eval-comment">评估意见 <span class="required">*</span></label>
+                <textarea id="eval-comment" class="form-control" rows="4" placeholder="请填写详细的评估意见..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">是否推荐立项？</label>
+                <div style="display:flex;gap:10px;margin-top:4px">
+                    <button class="btn btn-secondary" id="btn-proj-yes" onclick="setProject(1)">🚀 推荐立项</button>
+                    <button class="btn btn-secondary" id="btn-proj-no" onclick="setProject(0)">❌ 不推荐</button>
+                </div>
+                <input type="hidden" id="eval-project" value="0">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-evaluate')">取消</button>
+                <button class="btn btn-primary" onclick="submitEvaluation()">提交评估</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div class="modal-overlay hidden" id="modal-project">
+        <div class="modal modal-lg">
+            <h2>🚀 创建立项申请</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" for="proj-name">项目名称 <span class="required">*</span></label>
+                    <input id="proj-name" class="form-control" placeholder="请输入项目名称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="proj-code">项目编号</label>
+                    <input id="proj-code" class="form-control" placeholder="如 PRJ-2024-001">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="proj-manager">项目负责人</label>
+                    <input id="proj-manager" class="form-control" placeholder="责任人姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="proj-budget">项目预算（元）</label>
+                    <input id="proj-budget" class="form-control" type="number" placeholder="预计预算">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="proj-start">开始日期</label>
+                    <input id="proj-start" class="form-control" type="date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="proj-end">预计结束日期</label>
+                    <input id="proj-end" class="form-control" type="date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="proj-desc">项目说明</label>
+                <textarea id="proj-desc" class="form-control" rows="3" placeholder="项目具体说明、目标与里程碑..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-project')">取消</button>
+                <button class="btn btn-primary" onclick="submitProject()">确认立项</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        const ideaId = new URLSearchParams(window.location.search).get('id');
+        let ideaData = null;
+
+        async function loadIdea() {
+            if (!ideaId) { window.location.href = '/ideas.html'; return; }
+            const data = await API.get('/ideas/' + ideaId);
+            if (!data) return;
+            ideaData = data;
+            document.getElementById('page-title').textContent = data.idea.title;
+            renderDetail(data);
+
+            // Auto-scroll to anchor
+            const hash = window.location.hash;
+            if (hash) setTimeout(() => { const el = document.querySelector(hash); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 400);
+        }
+
+        function renderDetail({ idea, review, evidences, evaluations, project }) {
+            const user = window.currentUser;
+            const canReview = (user.role === 'reviewer' || user.role === 'admin') && idea.status === 'pending_review';
+            const canEvidence = idea.submitter_id === user.id && (idea.status === 'approved' || idea.status === 'evidence_submitted');
+            const canEvaluate = (user.role === 'expert' || user.role === 'admin') && idea.status === 'evidence_submitted';
+            const canProject = user.role === 'admin' && (idea.status === 'project_pending' || idea.status === 'evaluated' || idea.status === 'project_established');
+
+            const avgScore = evaluations.length ? (evaluations.reduce((a, e) => a + e.score, 0) / evaluations.length).toFixed(1) : null;
+
+            document.getElementById('detail-layout').innerHTML = `
+    <div class="detail-main">
+      <!-- Idea Header Card -->
+      <div class="card mb-16">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+              ${getBadge(idea.status)}
+              ${getCatTag(idea.category)}
+              ${idea.needs_project ? '<span class="badge" style="background:var(--orange-dim);color:var(--orange)">🔖 需立项</span>' : ''}
+            </div>
+            <h2 style="font-size:20px;font-weight:800;margin-bottom:12px">${idea.title}</h2>
+            <div class="idea-meta-row">
+              <span>👤 提交人: <b>${idea.submitter_name}</b></span>
+              <span>🏢 部门: <b>${idea.department_name}</b></span>
+              <span>📅 提交时间: ${fmtDateOnly(idea.created_at)}</span>
+              ${avgScore ? `<span>⭐ 平均评分: <b style="color:var(--yellow)">${avgScore}/10</b></span>` : ''}
+            </div>
+            ${idea.tags ? `<div style="margin-top:8px">${idea.tags.split(',').filter(Boolean).map(t => `<span style="background:var(--bg3);padding:2px 9px;border-radius:10px;font-size:11.5px;color:var(--text3);margin-right:5px">#${t.trim()}</span>`).join('')}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+            ${canReview ? `<button class="btn btn-warning" id="review" onclick="openModal('modal-review')">🔍 审核此想法</button>` : ''}
+            ${canEvidence ? `<button class="btn btn-primary" id="evidence" onclick="openModal('modal-evidence')">📎 上传举证</button>` : ''}
+            ${canEvaluate ? `<button class="btn btn-success" id="evaluate" onclick="openEvaluate()">🏆 提交评估</button>` : ''}
+            ${canProject ? `<button class="btn btn-sm" id="project" onclick="openProjectModal()" style="background:var(--cyan);color:#111">🚀 ${project ? '编辑立项' : '创建立项'}</button>` : ''}
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="section-title">想法描述</div>
+        <div style="font-size:14px;line-height:1.8;color:var(--text2);white-space:pre-wrap">${idea.description}</div>
+        ${idea.expected_benefit ? `
+          <hr class="divider">
+          <div class="section-title">预期收益</div>
+          <div style="font-size:14px;line-height:1.8;color:var(--text2)">${idea.expected_benefit}</div>
+        ` : ''}
+      </div>
+
+      <!-- Evidences -->
+      ${evidences.length > 0 ? `
+        <div class="card mb-16">
+          <div class="card-header"><div class="card-title">📎 执行举证 (${evidences.length})</div>
+            ${canEvidence ? `<button class="btn btn-primary btn-sm" onclick="openModal('modal-evidence')">+ 补充举证</button>` : ''}
+          </div>
+          <div>
+            ${evidences.map(ev => `
+              <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;border:1px solid var(--border)">
+                <div style="font-size:13px;line-height:1.7;margin-bottom:8px">${ev.description}</div>
+                ${ev.file_name ? `
+                  <a href="/uploads/${ev.file_path}" target="_blank" 
+                    style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--accent-light);text-decoration:none">
+                    📎 ${ev.file_name}
+                    ${ev.file_size ? `<span style="color:var(--text3)">(${(ev.file_size / 1024).toFixed(1)}KB)</span>` : ''}
+                  </a>
+                ` : ''}
+                <div style="font-size:11px;color:var(--text3);margin-top:6px">👤 ${ev.uploader_name} · ${fmtDate(ev.created_at)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Evaluations -->
+      ${evaluations.length > 0 ? `
+        <div class="card mb-16">
+          <div class="card-header">
+            <div><div class="card-title">🏆 专家评估 (${evaluations.length})</div></div>
+            ${canEvaluate ? `<button class="btn btn-success btn-sm" onclick="openEvaluate()">我的评估</button>` : ''}
+          </div>
+          ${evaluations.map(ev => `
+            <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+                <span style="font-weight:700;font-size:13.5px">${ev.expert_name}</span>
+                <span style="font-size:22px;font-weight:800;color:var(--yellow)">⭐ ${ev.score}</span>
+                <span style="margin-left:auto;font-size:12px" class="${ev.recommend_project ? 'text-accent' : 'text-muted'}">
+                  ${ev.recommend_project ? '🚀 推荐立项' : '不推荐立项'}
+                </span>
+              </div>
+              <div style="font-size:13px;color:var(--text2);line-height:1.7">${ev.comment}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:6px">${fmtDate(ev.created_at)}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <!-- Project -->
+      ${project ? `
+        <div class="card" style="border-color:var(--cyan);border-left:4px solid var(--cyan)">
+          <div class="card-header">
+            <div><div class="card-title" style="color:var(--cyan)">🚀 立项信息</div></div>
+            <span class="badge" style="background:var(--${project.status === 'in_progress' ? 'green' : 'bg4'}-dim??var(--bg4);color:var(--text2)">${{ planning: '规划中', in_progress: '进行中', completed: '已完成', suspended: '已暂停' }[project.status]}</span>
+          </div>
+          <div class="grid-2" style="gap:12px;font-size:13.5px">
+            <div><span class="text-muted">项目名称：</span><b>${project.project_name}</b></div>
+            <div><span class="text-muted">项目编号：</span>${project.project_code || '—'}</div>
+            <div><span class="text-muted">负责人：</span>${project.manager || '—'}</div>
+            <div><span class="text-muted">预算：</span>${project.budget ? '¥' + project.budget.toLocaleString() : '—'}</div>
+            <div><span class="text-muted">开始日期：</span>${project.start_date || '—'}</div>
+            <div><span class="text-muted">预计完成：</span>${project.end_date || '—'}</div>
+          </div>
+          ${project.description ? `<div style="margin-top:12px;font-size:13px;color:var(--text2)">${project.description}</div>` : ''}
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- Sidebar: Timeline -->
+    <div class="detail-sidebar">
+      <div class="card">
+        <div class="card-title mb-16">📋 流程进展</div>
+        <div class="timeline">
+          ${buildTimeline(idea, review, evidences, evaluations, project)}
+        </div>
+      </div>
+
+      <!-- Info Card -->
+      <div class="card">
+        <div class="card-title mb-16">ℹ️ 基本信息</div>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
+          <div class="flex justify-between"><span class="text-muted">提交人</span><b>${idea.submitter_name}</b></div>
+          <div class="flex justify-between"><span class="text-muted">所属部门</span><b>${idea.department_name}</b></div>
+          <div class="flex justify-between"><span class="text-muted">分类</span>${getCatTag(idea.category)}</div>
+          <div class="flex justify-between"><span class="text-muted">当前状态</span>${getBadge(idea.status)}</div>
+          <div class="flex justify-between"><span class="text-muted">提交时间</span><span>${fmtDateOnly(idea.created_at)}</span></div>
+          <div class="flex justify-between"><span class="text-muted">更新时间</span><span>${fmtDateOnly(idea.updated_at)}</span></div>
+          ${evaluations.length ? `<div class="flex justify-between"><span class="text-muted">专家数量</span><b>${evaluations.length}</b></div>` : ''}
+          ${avgScore ? `<div class="flex justify-between"><span class="text-muted">平均评分</span><b style="color:var(--yellow)">⭐ ${avgScore}/10</b></div>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+        }
+
+        function buildTimeline(idea, review, evidences, evaluations, project) {
+            const steps = [];
+
+            steps.push({
+                dot: 'var(--accent)', icon: '💡',
+                title: '提交创新想法',
+                meta: `${idea.submitter_name} · ${fmtDate(idea.created_at)}`,
+                body: null
+            });
+
+            if (review) {
+                steps.push({
+                    dot: review.decision === 'approve' ? 'var(--green)' : 'var(--red)',
+                    icon: review.decision === 'approve' ? '✅' : '❌',
+                    title: review.decision === 'approve' ? '审核通过' : '审核驳回',
+                    meta: `${review.reviewer_name} · ${fmtDate(review.created_at)}`,
+                    body: review.comment
+                });
+            } else if (idea.status === 'pending_review') {
+                steps.push({ dot: 'var(--yellow)', icon: '⏳', title: '等待审核…', meta: '', body: null });
+            }
+
+            if (evidences.length > 0) {
+                steps.push({
+                    dot: 'var(--blue)', icon: '📎',
+                    title: `上传执行举证 (${evidences.length}份)`,
+                    meta: `${fmtDate(evidences[0].created_at)}`,
+                    body: evidences[0].description?.substring(0, 100) + (evidences[0].description?.length > 100 ? '...' : '')
+                });
+            } else if (idea.status === 'approved') {
+                steps.push({ dot: 'var(--blue)', icon: '📎', title: '等待上传执行举证…', meta: '', body: null, dim: true });
+            }
+
+            if (evaluations.length > 0) {
+                const avgScore = (evaluations.reduce((a, e) => a + e.score, 0) / evaluations.length).toFixed(1);
+                steps.push({
+                    dot: 'var(--purple)', icon: '🏆',
+                    title: `专家评估完成 (${evaluations.length}位专家)`,
+                    meta: `平均分：${avgScore}/10`,
+                    body: null
+                });
+            } else if (idea.status === 'evidence_submitted') {
+                steps.push({ dot: 'var(--purple)', icon: '🏆', title: '等待专家评估…', meta: '', body: null, dim: true });
+            }
+
+            if (project) {
+                steps.push({
+                    dot: 'var(--cyan)', icon: '🚀',
+                    title: '项目已立项',
+                    meta: `${project.project_name} · ${fmtDate(project.created_at)}`,
+                    body: `项目编号：${project.project_code || '—'} | 负责人：${project.manager || '—'}`
+                });
+            } else if (idea.status === 'project_pending') {
+                steps.push({ dot: 'var(--orange)', icon: '🔖', title: '等待立项审批…', meta: '', body: null, dim: true });
+            }
+
+            return steps.map((s, i) => `
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:${s.dim ? 'var(--bg4)' : s.dot}20;color:${s.dim ? 'var(--text3)' : s.dot};border-color:${s.dim ? 'var(--bg3)' : 'var(--bg2)'}">${s.icon}</div>
+      <div class="timeline-content">
+        <div class="timeline-title" style="${s.dim ? 'color:var(--text3)' : ''}">${s.title}</div>
+        ${s.meta ? `<div class="timeline-meta">${s.meta}</div>` : ''}
+        ${s.body ? `<div class="timeline-body">${s.body}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+        }
+
+        // Review
+        let reviewDecision = '';
+        function setDecision(d) {
+            reviewDecision = d;
+            document.getElementById('review-decision').value = d;
+            document.getElementById('btn-approve').style.opacity = d === 'approve' ? '1' : '0.4';
+            document.getElementById('btn-reject').style.opacity = d === 'reject' ? '1' : '0.4';
+        }
+
+        async function submitReview() {
+            if (!reviewDecision) { toast('请选择审核决定', 'error'); return; }
+            try {
+                await API.post('/reviews', {
+                    idea_id: ideaId,
+                    decision: reviewDecision,
+                    comment: document.getElementById('review-comment').value
+                });
+                toast('审核意见已提交', 'success');
+                closeModal('modal-review');
+                loadIdea();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        // Evidence
+        let selectedFile = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('evidence-file');
+            if (fileInput) {
+                fileInput.addEventListener('change', e => {
+                    selectedFile = e.target.files[0];
+                    if (selectedFile) {
+                        document.getElementById('file-selected-name').textContent = selectedFile.name;
+                        document.getElementById('file-selected').classList.remove('hidden');
+                    }
+                });
+            }
+            const dropArea = document.getElementById('file-drop-area');
+            if (dropArea) {
+                dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+                dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+                dropArea.addEventListener('drop', e => {
+                    e.preventDefault(); dropArea.classList.remove('drag-over');
+                    selectedFile = e.dataTransfer.files[0];
+                    if (selectedFile) {
+                        document.getElementById('file-selected-name').textContent = selectedFile.name;
+                        document.getElementById('file-selected').classList.remove('hidden');
+                    }
+                });
+            }
+        });
+
+        function clearFile() {
+            selectedFile = null;
+            document.getElementById('evidence-file').value = '';
+            document.getElementById('file-selected').classList.add('hidden');
+        }
+
+        async function submitEvidence() {
+            const desc = document.getElementById('evidence-desc').value;
+            if (!desc) { toast('请填写举证说明', 'error'); return; }
+            const fd = new FormData();
+            fd.append('idea_id', ideaId);
+            fd.append('description', desc);
+            if (selectedFile) fd.append('file', selectedFile);
+            try {
+                await API.postForm('/evidences', fd);
+                toast('举证上传成功', 'success');
+                closeModal('modal-evidence');
+                clearFile();
+                document.getElementById('evidence-desc').value = '';
+                loadIdea();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        // Evaluation
+        let evalScore = 0;
+        let evalProject = 0;
+
+        function openEvaluate() {
+            // Pre-fill if already evaluated
+            const myEval = ideaData?.evaluations?.find(ev => ev.expert_id === window.currentUser?.id);
+            if (myEval) {
+                setScore(myEval.score);
+                document.getElementById('eval-comment').value = myEval.comment;
+                setProject(myEval.recommend_project);
+            } else {
+                setScore(0); setProject(0);
+                document.getElementById('eval-comment').value = '';
+            }
+            openModal('modal-evaluate');
+        }
+
+        function renderStars() {
+            const container = document.getElementById('rating-stars');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const star = document.createElement('span');
+                star.className = 'rating-star' + (i <= evalScore ? ' active' : '');
+                star.textContent = i <= evalScore ? '⭐' : '☆';
+                star.style.color = i <= evalScore ? 'var(--yellow)' : 'var(--text3)';
+                star.onclick = () => setScore(i);
+                star.onmouseover = () => highlightStars(i);
+                star.onmouseout = () => renderStars();
+                container.appendChild(star);
+            }
+            document.getElementById('score-display').textContent = evalScore || '—';
+        }
+
+        function highlightStars(n) {
+            const stars = document.querySelectorAll('.rating-star');
+            stars.forEach((s, i) => {
+                s.textContent = i < n ? '⭐' : '☆';
+                s.style.color = i < n ? 'var(--yellow)' : 'var(--text3)';
+            });
+            document.getElementById('score-display').textContent = n;
+        }
+
+        function setScore(n) {
+            evalScore = n;
+            document.getElementById('eval-score').value = n;
+            renderStars();
+        }
+
+        function setProject(v) {
+            evalProject = v;
+            document.getElementById('eval-project').value = v;
+            document.getElementById('btn-proj-yes').className = 'btn ' + (v ? 'btn-primary' : 'btn-secondary');
+            document.getElementById('btn-proj-no').className = 'btn ' + (!v ? 'btn-danger' : 'btn-secondary');
+        }
+
+        document.getElementById('modal-evaluate').addEventListener('show', () => renderStars());
+
+        async function submitEvaluation() {
+            if (!evalScore) { toast('请先评分', 'error'); return; }
+            const comment = document.getElementById('eval-comment').value;
+            if (!comment) { toast('请填写评估意见', 'error'); return; }
+            try {
+                await API.post('/evaluations', { idea_id: ideaId, score: evalScore, comment, recommend_project: evalProject });
+                toast('评估已提交', 'success');
+                closeModal('modal-evaluate');
+                loadIdea();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        // Project
+        function openProjectModal() {
+            const p = ideaData?.project;
+            if (p) {
+                document.getElementById('proj-name').value = p.project_name || '';
+                document.getElementById('proj-code').value = p.project_code || '';
+                document.getElementById('proj-manager').value = p.manager || '';
+                document.getElementById('proj-budget').value = p.budget || '';
+                document.getElementById('proj-start').value = p.start_date || '';
+                document.getElementById('proj-end').value = p.end_date || '';
+                document.getElementById('proj-desc').value = p.description || '';
+            } else {
+                document.getElementById('proj-name').value = ideaData?.idea?.title || '';
+                document.getElementById('proj-code').value = 'PRJ-' + new Date().getFullYear() + '-';
+            }
+            openModal('modal-project');
+        }
+
+        async function submitProject() {
+            const name = document.getElementById('proj-name').value;
+            if (!name) { toast('请填写项目名称', 'error'); return; }
+            try {
+                await API.post('/projects', {
+                    idea_id: ideaId,
+                    project_name: name,
+                    project_code: document.getElementById('proj-code').value,
+                    manager: document.getElementById('proj-manager').value,
+                    budget: document.getElementById('proj-budget').value,
+                    start_date: document.getElementById('proj-start').value || null,
+                    end_date: document.getElementById('proj-end').value || null,
+                    description: document.getElementById('proj-desc').value
+                });
+                toast('立项创建成功！', 'success');
+                closeModal('modal-project');
+                loadIdea();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        renderSidebar(null).then(loadIdea);
+        // Init stars
+        setTimeout(renderStars, 100);
+    </script>
+</body>
+
+</html>

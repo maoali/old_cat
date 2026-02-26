@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>登录 — 创新想法管理系统</title>
+  <meta name="description" content="企业内部创新想法管理平台，支持创意提交、审核、评估与项目立项的完整流程。">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon-lg">💡</div>
+      <h1>创新想法管理系统</h1>
+      <p>企业内部创新驱动平台</p>
+    </div>
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label" for="email">邮箱地址 <span class="required">*</span></label>
+        <input type="email" id="email" class="form-control" placeholder="请输入邮箱" autocomplete="email" required>
+      </div>
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label" for="password">密码 <span class="required">*</span></label>
+        <input type="password" id="password" class="form-control" placeholder="请输入密码" autocomplete="current-password" required>
+      </div>
+      <div id="login-error" class="hidden" style="color:var(--red);font-size:13px;margin-bottom:14px;background:var(--red-dim);padding:9px 13px;border-radius:8px;"></div>
+      <button type="submit" class="btn btn-primary w-full btn-lg" id="login-btn">登录</button>
+    </form>
+
+    <div class="demo-accounts mt-24">
+      <h4>🔑 演示账号（密码均为 demo123）</h4>
+      <div class="demo-account">
+        <span>👤 员工 — employee@demo.com</span>
+        <button onclick="fillDemo('employee@demo.com')">填入</button>
+      </div>
+      <div class="demo-account">
+        <span>🔍 审核员 — reviewer@demo.com</span>
+        <button onclick="fillDemo('reviewer@demo.com')">填入</button>
+      </div>
+      <div class="demo-account">
+        <span>🏆 专家 — expert@demo.com</span>
+        <button onclick="fillDemo('expert@demo.com')">填入</button>
+      </div>
+      <div class="demo-account">
+        <span>⚙️ 管理员 — admin@demo.com</span>
+        <button onclick="fillDemo('admin@demo.com')">填入</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function fillDemo(email) {
+  document.getElementById('email').value = email;
+  document.getElementById('password').value = 'demo123';
+}
+
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+  btn.textContent = '登录中...'; btn.disabled = true;
+  errEl.classList.add('hidden');
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: document.getElementById('email').value, password: document.getElementById('password').value })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '登录失败');
+    window.location.href = '/dashboard.html';
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
+    btn.textContent = '登录'; btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

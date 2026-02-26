@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>数据看板 — 创新想法管理系统</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">💡</div>
+                <h2>创新想法管理系统</h2>
+                <p>企业内部创新驱动平台</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-label">主菜单</div>
+                    <a class="nav-item" href="/dashboard.html" data-page="dashboard"><span
+                            class="nav-icon">📊</span>数据看板</a>
+                    <a class="nav-item" href="/ideas.html" data-page="ideas"><span class="nav-icon">💡</span>创新想法</a>
+                    <a class="nav-item" href="/create-idea.html" data-page="create"><span
+                            class="nav-icon">➕</span>提交想法</a>
+                </div>
+                <div class="nav-section" data-role="reviewer,admin">
+                    <div class="nav-label">审核管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=pending_review" data-page="review"><span
+                            class="nav-icon">🔍</span>待审核想法</a>
+                </div>
+                <div class="nav-section" data-role="expert,admin">
+                    <div class="nav-label">专家评估</div>
+                    <a class="nav-item" href="/ideas.html?filter=evidence_submitted" data-page="evaluate"><span
+                            class="nav-icon">🏆</span>待评估想法</a>
+                </div>
+                <div class="nav-section" data-role="admin">
+                    <div class="nav-label">管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=project_pending" data-page="project"><span
+                            class="nav-icon">🚀</span>待立项想法</a>
+                    <a class="nav-item" href="/admin.html" data-page="admin"><span class="nav-icon">⚙️</span>系统管理</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">加载中</div>
+                        <div class="user-role" id="user-role-label"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="退出登录">⬡</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1>📊 数据看板</h1>
+                <div class="header-actions">
+                    <span id="refresh-time" class="text-muted text-sm"></span>
+                    <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">🔄 刷新</button>
+                    <a href="/create-idea.html" class="btn btn-primary btn-sm">✚ 提交想法</a>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- KPI Cards -->
+                <div class="kpi-grid" id="kpi-grid">
+                    <div class="kpi-card" style="--accent-color:var(--accent);--icon-bg:var(--accent-dim)">
+                        <div class="kpi-icon">💡</div>
+                        <div class="kpi-value" id="kpi-total">–</div>
+                        <div class="kpi-label">想法总数</div>
+                    </div>
+                    <div class="kpi-card" style="--accent-color:var(--yellow);--icon-bg:var(--yellow-dim)">
+                        <div class="kpi-icon">⏳</div>
+                        <div class="kpi-value" id="kpi-pending">–</div>
+                        <div class="kpi-label">待审核</div>
+                    </div>
+                    <div class="kpi-card" style="--accent-color:var(--green);--icon-bg:var(--green-dim)">
+                        <div class="kpi-icon">📈</div>
+                        <div class="kpi-value" id="kpi-approval">–%</div>
+                        <div class="kpi-label">审核通过率</div>
+                    </div>
+                    <div class="kpi-card" style="--accent-color:var(--purple);--icon-bg:var(--purple-dim)">
+                        <div class="kpi-icon">⭐</div>
+                        <div class="kpi-value" id="kpi-score">–</div>
+                        <div class="kpi-label">平均评估分</div>
+                    </div>
+                    <div class="kpi-card" style="--accent-color:var(--cyan);--icon-bg:var(--cyan-dim)">
+                        <div class="kpi-icon">🚀</div>
+                        <div class="kpi-value" id="kpi-projects">–</div>
+                        <div class="kpi-label">已立项数</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">月度提交趋势</div>
+                                <div class="card-subtitle">最近12个月创新想法提交数量</div>
+                            </div>
+                        </div>
+                        <canvas id="chart-monthly"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <div class="card-title">分类分布</div>
+                        </div>
+                        <canvas id="chart-category"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <div class="card-title">部门分布</div>
+                        </div>
+                        <canvas id="chart-dept"></canvas>
+                    </div>
+                </div>
+
+                <!-- Kanban Board -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">创新想法看板</div>
+                            <div class="card-subtitle">按状态分类展示所有创新想法</div>
+                        </div>
+                        <a href="/ideas.html" class="btn btn-ghost btn-sm">查看列表 →</a>
+                    </div>
+                    <div class="kanban-board" id="kanban-board">
+                        <div class="empty-state">
+                            <div class="empty-icon">⏳</div>
+                            <p>加载中…</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        const KANBAN_COLS = [
+            { key: 'pending_review', label: '待审核', color: 'var(--yellow)' },
+            { key: 'approved', label: '已批准', color: 'var(--green)' },
+            { key: 'rejected', label: '已驳回', color: 'var(--red)' },
+            { key: 'evidence_submitted', label: '已提交举证', color: 'var(--blue)' },
+            { key: 'evaluated', label: '已评估', color: 'var(--purple)' },
+            { key: 'project_pending', label: '待立项', color: 'var(--orange)' },
+            { key: 'project_established', label: '已立项', color: 'var(--cyan)' },
+        ];
+
+        let charts = {};
+
+        async function loadDashboard() {
+            const data = await API.get('/dashboard/stats');
+            if (!data) return;
+
+            // KPI
+            const statusMap = {};
+            data.byStatus.forEach(s => statusMap[s.status] = s.count);
+            document.getElementById('kpi-total').textContent = data.total;
+            document.getElementById('kpi-pending').textContent = statusMap['pending_review'] || 0;
+            document.getElementById('kpi-approval').textContent = data.approvalRate + '%';
+            document.getElementById('kpi-score').textContent = data.avgScore || '—';
+            document.getElementById('kpi-projects').textContent = data.projectCount;
+            document.getElementById('refresh-time').textContent = '更新于 ' + new Date().toLocaleTimeString('zh-CN');
+
+            // Charts
+            renderCharts(data);
+
+            // Kanban
+            renderKanban(data.kanban);
+        }
+
+        function renderCharts(data) {
+            const chartDefaults = {
+                plugins: { legend: { labels: { color: '#9399b2', font: { size: 12 }, boxWidth: 12 } } },
+                scales: {}
+            };
+
+            // Monthly trend
+            if (charts.monthly) charts.monthly.destroy();
+            const mCtx = document.getElementById('chart-monthly').getContext('2d');
+            charts.monthly = new Chart(mCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.monthly.map(m => m.month),
+                    datasets: [{
+                        label: '提交数量',
+                        data: data.monthly.map(m => m.count),
+                        backgroundColor: 'rgba(108,99,255,0.5)',
+                        borderColor: '#6c63ff',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9399b2', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { ticks: { color: '#9399b2', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, precision: 0 }
+                    }
+                }
+            });
+
+            // Category pie
+            const catColors = ['#6c63ff', '#22c55e', '#a855f7', '#f59e0b', '#f97316', '#636882'];
+            if (charts.category) charts.category.destroy();
+            const cCtx = document.getElementById('chart-category').getContext('2d');
+            charts.category = new Chart(cCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.byCategory.map(c => c.category),
+                    datasets: [{ data: data.byCategory.map(c => c.count), backgroundColor: catColors, borderWidth: 2, borderColor: '#16181f' }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#9399b2', font: { size: 11 }, boxWidth: 10 } } },
+                    cutout: '60%'
+                }
+            });
+
+            // Dept bar
+            if (charts.dept) charts.dept.destroy();
+            const dCtx = document.getElementById('chart-dept').getContext('2d');
+            charts.dept = new Chart(dCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.byDept.map(d => d.department),
+                    datasets: [{ label: '想法数', data: data.byDept.map(d => d.count), backgroundColor: '#3b82f6aa', borderRadius: 5 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true, indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9399b2', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, precision: 0 },
+                        y: { ticks: { color: '#9399b2', font: { size: 11 } }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderKanban(ideas) {
+            const board = document.getElementById('kanban-board');
+            const grouped = {};
+            KANBAN_COLS.forEach(c => grouped[c.key] = []);
+            ideas.forEach(idea => { if (grouped[idea.status]) grouped[idea.status].push(idea); });
+
+            board.innerHTML = KANBAN_COLS.map(col => `
+    <div class="kanban-col">
+      <div class="kanban-col-header">
+        <span class="kanban-col-title" style="color:${col.color}">${STATUS_MAP[col.key]?.icon} ${col.label}</span>
+        <span class="kanban-count">${grouped[col.key].length}</span>
+      </div>
+      <div>
+        ${grouped[col.key].length === 0
+                    ? `<div class="kanban-empty">暂无</div>`
+                    : grouped[col.key].map(idea => `
+            <div class="kanban-card" onclick="window.location.href='/idea-detail.html?id=${idea.id}'">
+              <div class="kanban-card-title">${idea.title}</div>
+              <div class="kanban-card-meta">
+                <span class="kanban-card-dept">${idea.department_name}</span>
+                <span>${getCatTag(idea.category)}</span>
+              </div>
+              <div class="kanban-card-meta mt-4">
+                <span>👤 ${idea.submitter_name}</span>
+                ${idea.avg_score ? `<span>⭐ ${Math.round(idea.avg_score * 10) / 10}</span>` : ''}
+              </div>
+            </div>
+          `).join('')}
+      </div>
+    </div>
+  `).join('');
+        }
+
+        renderSidebar('dashboard');
+        loadDashboard();
+    </script>
+</body>
+
+</html>

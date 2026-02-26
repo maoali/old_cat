@@ -1,0 +1,178 @@
+# Enterprise Innovation Idea Management System — Implementation Plan
+
+## Overview
+
+Build a full-stack web application for managing enterprise innovation ideas. The system runs on Node.js/Express with SQLite for persistence, and serves a modern responsive web UI with vanilla HTML/CSS/JS.
+
+---
+
+## Tech Stack
+
+| Layer | Choice |
+|---|---|
+| Runtime | Node.js |
+| Framework | Express.js |
+| Database | SQLite (via `better-sqlite3`) |
+| File upload | `multer` |
+| Auth | Session-based (express-session + bcryptjs) |
+| Frontend | Vanilla HTML5 / CSS3 / JS (no build step) |
+
+---
+
+## User Roles & Workflow
+
+```
+Employee → Submit Idea
+                ↓
+        [STATUS: pending_review]
+                ↓
+         Reviewer Reviews
+      ┌── reject → [rejected]
+      └── approve → [approved]
+                ↓
+      Employee Uploads Evidence
+                ↓
+        [STATUS: evidence_submitted]
+                ↓
+      Expert Team Evaluates (1+ experts)
+      ┌── reject → [evaluation_rejected]
+      └── approve → [evaluated]
+                ↓
+         Needs Project? (yes/no flag)
+      └── yes → [project_pending]
+                ↓
+         Admin Creates Project Record
+                ↓
+           [project_established]
+```
+
+---
+
+## Database Schema
+
+### Tables
+- **users** — id, name, email, password_hash, role (employee/reviewer/expert/admin), department_id
+- **departments** — id, name, description
+- **ideas** — id, title, description, category, department_id, submitter_id, status, needs_project, created_at, updated_at
+- **reviews** — id, idea_id, reviewer_id, decision (approve/reject), comment, created_at
+- **evidences** — id, idea_id, description, file_path, file_name, created_at
+- **evaluations** — id, idea_id, expert_id, score (1-10), comment, recommend_project (bool), created_at
+- **projects** — id, idea_id, project_name, project_code, manager, budget, start_date, status, created_at
+- **idea_categories** — predefined: 技术创新, 流程优化, 产品创新, 管理创新, 市场开拓, 其他
+
+---
+
+## Project Structure
+
+```
+/Users/ericmao/work/old_cat/
+└── innovation-system/
+    ├── package.json
+    ├── server.js              # Express app entry point
+    ├── database.js            # DB init & helpers
+    ├── routes/
+    │   ├── auth.js
+    │   ├── ideas.js
+    │   ├── reviews.js
+    │   ├── evidences.js
+    │   ├── evaluations.js
+    │   ├── projects.js
+    │   ├── departments.js
+    │   └── dashboard.js
+    ├── middleware/
+    │   └── auth.js            # Role guard middleware
+    ├── uploads/               # File storage
+    └── public/
+        ├── index.html         # Login page
+        ├── dashboard.html     # Kanban + stats
+        ├── ideas.html         # Idea list
+        ├── idea-detail.html   # Detail + timeline
+        ├── create-idea.html   # Submit form
+        ├── admin.html         # User/dept management
+        ├── css/
+        │   └── main.css
+        └── js/
+            ├── api.js         # Fetch wrapper
+            ├── auth.js
+            ├── dashboard.js
+            ├── ideas.js
+            ├── idea-detail.js
+            ├── create-idea.js
+            └── admin.js
+```
+
+---
+
+## Proposed Changes
+
+### [NEW] innovation-system/ (entire new project)
+
+All files below are new.
+
+#### [NEW] package.json
+#### [NEW] server.js
+#### [NEW] database.js
+#### [NEW] routes/*.js (7 route files)
+#### [NEW] middleware/auth.js
+#### [NEW] public/\*.html (6 HTML pages)
+#### [NEW] public/css/main.css
+#### [NEW] public/js/\*.js (7 JS files)
+
+---
+
+## Key Features Per Page
+
+### Dashboard (dashboard.html)
+- Kanban board: columns for each status (pending/approved/evidence/evaluated/project)
+- Pie charts: ideas by category, by department
+- Bar chart: monthly idea submissions trend
+- Summary KPI cards: total ideas, approval rate, avg evaluation score
+
+### Idea List (ideas.html)
+- Filterable table: by status, category, department, date range
+- Role-based action buttons (review / upload evidence / evaluate / establish project)
+
+### Idea Detail (idea-detail.html)
+- Full timeline showing each workflow stage with timestamps and actor info
+- Inline review form (reviewer only)
+- Evidence upload section (submitter, after approval)
+- Expert evaluation form (expert only, shows all submitted evaluations)
+- Project establishment form (admin only, if flagged)
+
+### Admin Panel (admin.html)
+- User management: create/edit users, assign roles and departments
+- Department management: CRUD
+- System overview stats
+
+---
+
+## Seed Data
+
+Auto-seeded on first run:
+- 5 departments
+- 6 predefined categories  
+- Demo accounts for each role (employee/reviewer/expert/admin)
+
+---
+
+## Verification Plan
+
+### Manual Testing (Browser-based)
+
+Start the server:
+```bash
+cd /Users/ericmao/work/old_cat/innovation-system
+npm install
+npm start
+# Server runs on http://localhost:3000
+```
+
+Test each role flow:
+
+1. **Employee flow** — Login as `employee@demo.com` / `demo123`, create a new idea, verify it appears in list with status "待审核"
+2. **Reviewer flow** — Login as `reviewer@demo.com` / `demo123`, approve the idea, verify status changes to "已批准"  
+3. **Employee uploads evidence** — Back as employee, upload a text/image file with description
+4. **Expert evaluation** — Login as `expert@demo.com` / `demo123`, submit evaluation with score and recommendation
+5. **Project establishment** — Login as `admin@demo.com` / `demo123`, create project record for a flagged idea
+6. **Dashboard** — Verify kanban columns reflect correct idea counts and charts render correctly
+

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>系统管理 — 创新想法管理系统</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">💡</div>
+                <h2>创新想法管理系统</h2>
+                <p>企业内部创新驱动平台</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-label">主菜单</div>
+                    <a class="nav-item" href="/dashboard.html" data-page="dashboard"><span
+                            class="nav-icon">📊</span>数据看板</a>
+                    <a class="nav-item" href="/ideas.html" data-page="ideas"><span class="nav-icon">💡</span>创新想法</a>
+                    <a class="nav-item" href="/create-idea.html" data-page="create"><span
+                            class="nav-icon">➕</span>提交想法</a>
+                </div>
+                <div class="nav-section" data-role="reviewer,admin">
+                    <div class="nav-label">审核管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=pending_review" data-page="review"><span
+                            class="nav-icon">🔍</span>待审核想法</a>
+                </div>
+                <div class="nav-section" data-role="expert,admin">
+                    <div class="nav-label">专家评估</div>
+                    <a class="nav-item" href="/ideas.html?filter=evidence_submitted" data-page="evaluate"><span
+                            class="nav-icon">🏆</span>待评估想法</a>
+                </div>
+                <div class="nav-section" data-role="admin">
+                    <div class="nav-label">管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=project_pending" data-page="project"><span
+                            class="nav-icon">🚀</span>待立项想法</a>
+                    <a class="nav-item" href="/admin.html" data-page="admin"><span class="nav-icon">⚙️</span>系统管理</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">加载中</div>
+                        <div class="user-role" id="user-role-label"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="退出登录">⬡</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>⚙️ 系统管理</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-user')">✚ 添加用户</button>
+                    <button class="btn btn-secondary btn-sm" onclick="openModal('modal-add-dept')">🏢 添加部门</button>
+                </div>
+            </div>
+            <div class="page-body">
+                <!-- Tabs -->
+                <div
+                    style="display:flex;gap:4px;margin-bottom:20px;background:var(--bg2);padding:4px;border-radius:var(--radius-sm);width:fit-content;border:1px solid var(--border)">
+                    <button class="btn btn-primary btn-sm" id="tab-users" onclick="switchTab('users')">👥 用户管理</button>
+                    <button class="btn btn-ghost btn-sm" id="tab-depts" onclick="switchTab('depts')">🏢 部门管理</button>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="panel-users">
+                    <div class="card">
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>姓名</th>
+                                        <th>邮箱</th>
+                                        <th>角色</th>
+                                        <th>部门</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted" style="padding:40px">加载中…</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Depts Tab -->
+                <div id="panel-depts" class="hidden">
+                    <div class="card">
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>部门名称</th>
+                                        <th>描述</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="depts-tbody">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted" style="padding:40px">加载中…</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay hidden" id="modal-add-user">
+        <div class="modal">
+            <h2 id="user-modal-title">➕ 添加用户</h2>
+            <input type="hidden" id="edit-user-id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" for="u-name">姓名 <span class="required">*</span></label>
+                    <input id="u-name" class="form-control" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="u-email">邮箱 <span class="required">*</span></label>
+                    <input id="u-email" class="form-control" type="email" placeholder="邮箱地址">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="u-role">角色 <span class="required">*</span></label>
+                    <select id="u-role" class="form-control">
+                        <option value="employee">员工</option>
+                        <option value="reviewer">审核员</option>
+                        <option value="expert">专家</option>
+                        <option value="admin">管理员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="u-dept">部门</label>
+                    <select id="u-dept" class="form-control">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="u-password">密码 <span class="required" id="pwd-required">*</span></label>
+                <input id="u-password" class="form-control" type="password" placeholder="新用户设置密码，编辑时留空则不修改">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-add-user');resetUserForm()">取消</button>
+                <button class="btn btn-primary" onclick="saveUser()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Dept Modal -->
+    <div class="modal-overlay hidden" id="modal-add-dept">
+        <div class="modal">
+            <h2>🏢 添加部门</h2>
+            <div class="form-group">
+                <label class="form-label" for="d-name">部门名称 <span class="required">*</span></label>
+                <input id="d-name" class="form-control" placeholder="请输入部门名称">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="d-desc">部门描述</label>
+                <textarea id="d-desc" class="form-control" rows="2" placeholder="简短描述部门职能"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-add-dept')">取消</button>
+                <button class="btn btn-primary" onclick="saveDept()">添加</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let depts = [];
+        let editingUserId = null;
+
+        function switchTab(tab) {
+            document.getElementById('panel-users').classList.toggle('hidden', tab !== 'users');
+            document.getElementById('panel-depts').classList.toggle('hidden', tab !== 'depts');
+            document.getElementById('tab-users').className = 'btn btn-sm ' + (tab === 'users' ? 'btn-primary' : 'btn-ghost');
+            document.getElementById('tab-depts').className = 'btn btn-sm ' + (tab === 'depts' ? 'btn-primary' : 'btn-ghost');
+        }
+
+        async function loadUsers() {
+            const data = await API.get('/admin/users');
+            if (!data) return;
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = data.users.map(u => `
+    <tr>
+      <td><b>${u.name}</b></td>
+      <td><span class="text-sm">${u.email}</span></td>
+      <td><span class="role-badge role-${u.role}">${ROLE_MAP[u.role]}</span></td>
+      <td><span class="text-sm">${u.department_name || '—'}</span></td>
+      <td><span class="text-sm text-muted">${fmtDateOnly(u.created_at)}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="editUser(${u.id})">编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}, '${u.name}')">删除</button>
+      </td>
+    </tr>
+  `).join('');
+        }
+
+        async function loadDepts() {
+            const data = await API.get('/departments');
+            depts = data.departments;
+            const tbody = document.getElementById('depts-tbody');
+            tbody.innerHTML = depts.map(d => `
+    <tr>
+      <td><b>${d.name}</b></td>
+      <td><span class="text-sm text-muted">${d.description || '—'}</span></td>
+      <td><span class="text-sm text-muted">${fmtDateOnly(d.created_at)}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteDept(${d.id}, '${d.name}')">删除</button></td>
+    </tr>
+  `).join('');
+            // Populate dept selects
+            const sel = document.getElementById('u-dept');
+            sel.innerHTML = '<option value="">请选择</option>' + depts.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        }
+
+        function resetUserForm() {
+            editingUserId = null;
+            document.getElementById('edit-user-id').value = '';
+            document.getElementById('u-name').value = '';
+            document.getElementById('u-email').value = '';
+            document.getElementById('u-email').disabled = false;
+            document.getElementById('u-role').value = 'employee';
+            document.getElementById('u-dept').value = '';
+            document.getElementById('u-password').value = '';
+            document.getElementById('user-modal-title').textContent = '➕ 添加用户';
+            document.getElementById('pwd-required').style.display = 'inline';
+        }
+
+        async function editUser(id) {
+            const data = await API.get('/admin/users');
+            const user = data.users.find(u => u.id === id);
+            if (!user) return;
+            editingUserId = id;
+            document.getElementById('edit-user-id').value = id;
+            document.getElementById('u-name').value = user.name;
+            document.getElementById('u-email').value = user.email;
+            document.getElementById('u-email').disabled = true;
+            document.getElementById('u-role').value = user.role;
+            document.getElementById('u-dept').value = user.department_id || '';
+            document.getElementById('u-password').value = '';
+            document.getElementById('user-modal-title').textContent = '✏️ 编辑用户';
+            document.getElementById('pwd-required').style.display = 'none';
+            openModal('modal-add-user');
+        }
+
+        async function saveUser() {
+            const name = document.getElementById('u-name').value;
+            const email = document.getElementById('u-email').value;
+            const role = document.getElementById('u-role').value;
+            const department_id = document.getElementById('u-dept').value || null;
+            const password = document.getElementById('u-password').value;
+            if (!name || (!editingUserId && !email) || !role) { toast('请填写必填字段', 'error'); return; }
+            try {
+                if (editingUserId) {
+                    await API.patch('/admin/users/' + editingUserId, { name, role, department_id, password: password || undefined });
+                    toast('用户信息已更新', 'success');
+                } else {
+                    if (!password) { toast('请设置密码', 'error'); return; }
+                    await API.post('/admin/users', { name, email, password, role, department_id });
+                    toast('用户添加成功', 'success');
+                }
+                closeModal('modal-add-user');
+                resetUserForm();
+                loadUsers();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function deleteUser(id, name) {
+            if (!confirm(`确定删除用户 "${name}" 吗？此操作不可撤销。`)) return;
+            try {
+                await API.delete('/admin/users/' + id);
+                toast('用户已删除', 'success');
+                loadUsers();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function saveDept() {
+            const name = document.getElementById('d-name').value;
+            if (!name) { toast('请填写部门名称', 'error'); return; }
+            try {
+                await API.post('/departments', { name, description: document.getElementById('d-desc').value });
+                toast('部门添加成功', 'success');
+                document.getElementById('d-name').value = '';
+                document.getElementById('d-desc').value = '';
+                closeModal('modal-add-dept');
+                loadDepts();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function deleteDept(id, name) {
+            if (!confirm(`确定删除部门 "${name}" 吗？`)) return;
+            try {
+                await API.delete('/departments/' + id);
+                toast('部门已删除', 'success');
+                loadDepts();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        renderSidebar('admin');
+        loadUsers();
+        loadDepts();
+    </script>
+</body>
+
+</html>

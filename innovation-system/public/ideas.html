@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>创新想法列表 — 创新想法管理系统</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">💡</div>
+                <h2>创新想法管理系统</h2>
+                <p>企业内部创新驱动平台</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-label">主菜单</div>
+                    <a class="nav-item" href="/dashboard.html" data-page="dashboard"><span
+                            class="nav-icon">📊</span>数据看板</a>
+                    <a class="nav-item" href="/ideas.html" data-page="ideas"><span class="nav-icon">💡</span>创新想法</a>
+                    <a class="nav-item" href="/create-idea.html" data-page="create"><span
+                            class="nav-icon">➕</span>提交想法</a>
+                </div>
+                <div class="nav-section" data-role="reviewer,admin">
+                    <div class="nav-label">审核管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=pending_review" data-page="review"><span
+                            class="nav-icon">🔍</span>待审核想法</a>
+                </div>
+                <div class="nav-section" data-role="expert,admin">
+                    <div class="nav-label">专家评估</div>
+                    <a class="nav-item" href="/ideas.html?filter=evidence_submitted" data-page="evaluate"><span
+                            class="nav-icon">🏆</span>待评估想法</a>
+                </div>
+                <div class="nav-section" data-role="admin">
+                    <div class="nav-label">管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=project_pending" data-page="project"><span
+                            class="nav-icon">🚀</span>待立项想法</a>
+                    <a class="nav-item" href="/admin.html" data-page="admin"><span class="nav-icon">⚙️</span>系统管理</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">加载中</div>
+                        <div class="user-role" id="user-role-label"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="退出登录">⬡</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>💡 创新想法</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary btn-sm" id="btn-my-ideas" onclick="toggleMyIdeas()">我的想法</button>
+                    <a href="/create-idea.html" class="btn btn-primary btn-sm">✚ 提交想法</a>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="filter-bar">
+                    <select id="filter-status" onchange="loadIdeas()">
+                        <option value="">全部状态</option>
+                        <option value="pending_review">待审核</option>
+                        <option value="approved">已批准</option>
+                        <option value="rejected">已驳回</option>
+                        <option value="evidence_submitted">已提交举证</option>
+                        <option value="evaluated">已评估</option>
+                        <option value="project_pending">待立项</option>
+                        <option value="project_established">已立项</option>
+                    </select>
+                    <select id="filter-cat" onchange="loadIdeas()">
+                        <option value="">全部分类</option>
+                        <option>技术创新</option>
+                        <option>流程优化</option>
+                        <option>产品创新</option>
+                        <option>管理创新</option>
+                        <option>市场开拓</option>
+                        <option>其他</option>
+                    </select>
+                    <select id="filter-dept" onchange="loadIdeas()">
+                        <option value="">全部部门</option>
+                    </select>
+                    <div class="filter-spacer"></div>
+                    <span id="ideas-count" class="text-muted text-sm"></span>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>创新想法</th>
+                                    <th>分类</th>
+                                    <th>部门</th>
+                                    <th>提交人</th>
+                                    <th>状态</th>
+                                    <th>评估分</th>
+                                    <th>提交时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ideas-tbody">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted" style="padding:40px">加载中…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let showMyIdeas = false;
+
+        async function loadDepts() {
+            const data = await API.get('/departments');
+            const sel = document.getElementById('filter-dept');
+            data.departments.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.id; opt.textContent = d.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        async function loadIdeas() {
+            const status = document.getElementById('filter-status').value;
+            const cat = document.getElementById('filter-cat').value;
+            const dept = document.getElementById('filter-dept').value;
+            let qs = new URLSearchParams();
+            if (status) qs.set('status', status);
+            if (cat) qs.set('category', cat);
+            if (dept) qs.set('department_id', dept);
+            if (showMyIdeas) qs.set('my', '1');
+
+            const data = await API.get('/ideas?' + qs.toString());
+            if (!data) return;
+            const tbody = document.getElementById('ideas-tbody');
+            document.getElementById('ideas-count').textContent = `共 ${data.ideas.length} 条`;
+
+            if (!data.ideas.length) {
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🔍</div><p>暂无相关创新想法</p></div></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.ideas.map(idea => `
+    <tr>
+      <td>
+        <div class="idea-title" onclick="window.location.href='/idea-detail.html?id=${idea.id}'">${idea.title}</div>
+        ${idea.tags ? `<div class="text-sm text-muted mt-4">${idea.tags.split(',').filter(Boolean).map(t => `<span style="margin-right:4px">#${t.trim()}</span>`).join('')}</div>` : ''}
+      </td>
+      <td>${getCatTag(idea.category)}</td>
+      <td><span class="text-sm">${idea.department_name}</span></td>
+      <td><span class="text-sm">${idea.submitter_name}</span></td>
+      <td>${getBadge(idea.status)}</td>
+      <td>${idea.avg_score ? `<span style="color:var(--yellow);font-weight:700">⭐ ${Math.round(idea.avg_score * 10) / 10}</span>` : '<span class="text-muted">—</span>'}</td>
+      <td><span class="text-sm text-muted">${fmtDateOnly(idea.created_at)}</span></td>
+      <td>
+        <a href="/idea-detail.html?id=${idea.id}" class="btn btn-ghost btn-sm">查看</a>
+        ${getActionBtn(idea)}
+      </td>
+    </tr>
+  `).join('');
+        }
+
+        function getActionBtn(idea) {
+            const user = window.currentUser;
+            if (!user) return '';
+            if ((user.role === 'reviewer' || user.role === 'admin') && idea.status === 'pending_review') {
+                return `<a href="/idea-detail.html?id=${idea.id}#review" class="btn btn-warning btn-sm">审核</a>`;
+            }
+            if (idea.submitter_id === user.id && idea.status === 'approved') {
+                return `<a href="/idea-detail.html?id=${idea.id}#evidence" class="btn btn-primary btn-sm">上传举证</a>`;
+            }
+            if ((user.role === 'expert' || user.role === 'admin') && idea.status === 'evidence_submitted') {
+                return `<a href="/idea-detail.html?id=${idea.id}#evaluate" class="btn btn-success btn-sm">评估</a>`;
+            }
+            if (user.role === 'admin' && idea.status === 'project_pending') {
+                return `<a href="/idea-detail.html?id=${idea.id}#project" class="btn btn-sm" style="background:var(--cyan);color:#111">立项</a>`;
+            }
+            return '';
+        }
+
+        function toggleMyIdeas() {
+            showMyIdeas = !showMyIdeas;
+            const btn = document.getElementById('btn-my-ideas');
+            btn.classList.toggle('btn-primary', showMyIdeas);
+            btn.classList.toggle('btn-secondary', !showMyIdeas);
+            loadIdeas();
+        }
+
+        // Apply URL filter param
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('filter')) {
+            document.getElementById('filter-status').value = urlParams.get('filter');
+        }
+
+        renderSidebar('ideas');
+        loadDepts();
+        loadIdeas();
+    </script>
+</body>
+
+</html>

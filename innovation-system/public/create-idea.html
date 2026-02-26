@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>提交创新想法 — 创新想法管理系统</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">💡</div>
+                <h2>创新想法管理系统</h2>
+                <p>企业内部创新驱动平台</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-label">主菜单</div>
+                    <a class="nav-item" href="/dashboard.html" data-page="dashboard"><span
+                            class="nav-icon">📊</span>数据看板</a>
+                    <a class="nav-item" href="/ideas.html" data-page="ideas"><span class="nav-icon">💡</span>创新想法</a>
+                    <a class="nav-item" href="/create-idea.html" data-page="create"><span
+                            class="nav-icon">➕</span>提交想法</a>
+                </div>
+                <div class="nav-section" data-role="reviewer,admin">
+                    <div class="nav-label">审核管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=pending_review" data-page="review"><span
+                            class="nav-icon">🔍</span>待审核想法</a>
+                </div>
+                <div class="nav-section" data-role="expert,admin">
+                    <div class="nav-label">专家评估</div>
+                    <a class="nav-item" href="/ideas.html?filter=evidence_submitted" data-page="evaluate"><span
+                            class="nav-icon">🏆</span>待评估想法</a>
+                </div>
+                <div class="nav-section" data-role="admin">
+                    <div class="nav-label">管理</div>
+                    <a class="nav-item" href="/ideas.html?filter=project_pending" data-page="project"><span
+                            class="nav-icon">🚀</span>待立项想法</a>
+                    <a class="nav-item" href="/admin.html" data-page="admin"><span class="nav-icon">⚙️</span>系统管理</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">加载中</div>
+                        <div class="user-role" id="user-role-label"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="退出登录">⬡</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>✚ 提交创新想法</h1>
+                <div class="header-actions">
+                    <a href="/ideas.html" class="btn btn-secondary btn-sm">← 返回列表</a>
+                </div>
+            </div>
+            <div class="page-body">
+                <div style="max-width:720px">
+                    <div class="card">
+                        <div style="margin-bottom:24px">
+                            <div class="card-title" style="font-size:16px">填写创新想法详情</div>
+                            <div class="card-subtitle mt-4">请尽量提供详细的描述，有助于审核员更好地评估您的创新想法</div>
+                        </div>
+                        <form id="create-form">
+                            <div class="form-group">
+                                <label class="form-label" for="title">创新想法标题 <span class="required">*</span></label>
+                                <input type="text" id="title" class="form-control" placeholder="请输入简洁明确的标题（5-50字）"
+                                    maxlength="100" required>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="category">分类 <span class="required">*</span></label>
+                                    <select id="category" class="form-control" required>
+                                        <option value="">请选择分类</option>
+                                        <option>技术创新</option>
+                                        <option>流程优化</option>
+                                        <option>产品创新</option>
+                                        <option>管理创新</option>
+                                        <option>市场开拓</option>
+                                        <option>其他</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="department">所属部门 <span
+                                            class="required">*</span></label>
+                                    <select id="department" class="form-control" required>
+                                        <option value="">请选择部门</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="description">详细描述 <span class="required">*</span></label>
+                                <textarea id="description" class="form-control" rows="6"
+                                    placeholder="请详细描述您的创新想法：背景与问题、解决方案、实施思路..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="expected_benefit">预期收益</label>
+                                <textarea id="expected_benefit" class="form-control" rows="3"
+                                    placeholder="描述该创新想法预期能带来的价值和收益..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="tags">标签</label>
+                                <input type="text" id="tags" class="form-control"
+                                    placeholder="多个标签用英文逗号分隔，例如：AI,自动化,效率提升">
+                                <div class="form-hint">有助于分类检索和关联相似想法</div>
+                            </div>
+
+                            <div style="display:flex;gap:12px;justify-content:flex-end;padding-top:8px">
+                                <a href="/ideas.html" class="btn btn-secondary">取消</a>
+                                <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">🚀 提交创新想法</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tips -->
+                    <div class="card mt-16" style="background:var(--accent-dim);border-color:rgba(108,99,255,0.25)">
+                        <div class="card-title" style="color:var(--accent-light)">💡 提交前请确认</div>
+                        <ul style="margin-top:10px;padding-left:18px;font-size:13px;color:var(--text2);line-height:2">
+                            <li>想法标题简洁明确，能说明创新的核心</li>
+                            <li>详细描述已包含背景、方案和逻辑</li>
+                            <li>预期收益部分尽量量化，如"减少XX%工时"</li>
+                            <li>提交后将进入审核流程，审核期间可以随时查看进展</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        async function loadDepts() {
+            const data = await API.get('/departments');
+            const sel = document.getElementById('department');
+            data.departments.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.id; opt.textContent = d.name;
+                sel.appendChild(opt);
+            });
+            // Pre-select user's department
+            if (window.currentUser?.department_id) sel.value = window.currentUser.department_id;
+        }
+
+        document.getElementById('create-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.textContent = '提交中...'; btn.disabled = true;
+            try {
+                const data = await API.post('/ideas', {
+                    title: document.getElementById('title').value,
+                    category: document.getElementById('category').value,
+                    department_id: document.getElementById('department').value,
+                    description: document.getElementById('description').value,
+                    expected_benefit: document.getElementById('expected_benefit').value,
+                    tags: document.getElementById('tags').value
+                });
+                toast('创新想法提交成功！即将跳转到详情页', 'success');
+                setTimeout(() => window.location.href = '/idea-detail.html?id=' + data.idea.id, 1200);
+            } catch (err) {
+                toast(err.message || '提交失败', 'error');
+                btn.textContent = '🚀 提交创新想法'; btn.disabled = false;
+            }
+        });
+
+        renderSidebar('create').then(loadDepts);
+    </script>
+</body>
+
+</html>
