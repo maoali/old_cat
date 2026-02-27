@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>深圳小学升初中 · 错题训练系统</title>
+    <meta name="description" content="深圳六年级小学生升初中备考系统 - 知识点全集、易错题练习、模拟试卷、错题分析" />
+    <!-- Android / PWA meta -->
+    <meta name="theme-color" content="#0f1117" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="深圳小升初" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+    <!-- ====== SIDEBAR（桌面端）====== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1>深圳小升初<br>备考系统</h1>
+            <p>六年级考点全覆盖</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">总览</div>
+            <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+                <span class="icon">🏠</span> 主页
+            </div>
+
+            <div class="nav-section-label" style="margin-top:8px">学习</div>
+            <div class="nav-item" data-page="knowledge" onclick="navigate('knowledge')">
+                <span class="icon">📖</span> 知识点全集
+            </div>
+            <div class="nav-item" data-page="practice" onclick="navigate('practice')">
+                <span class="icon">✏️</span> 易错题练习
+            </div>
+            <div class="nav-item" data-page="exams" onclick="navigate('exams')">
+                <span class="icon">📝</span> 模拟试卷
+            </div>
+
+            <div class="nav-section-label" style="margin-top:8px">分析</div>
+            <div class="nav-item" data-page="errorbook" onclick="navigate('errorbook')">
+                <span class="icon">📕</span> 错题本
+            </div>
+            <div class="nav-item" data-page="report" onclick="navigate('report')">
+                <span class="icon">📊</span> 学习报告
+            </div>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="progress-summary">
+                <h4>学科正确率</h4>
+                <div class="mini-progress">
+                    <label>
+                        <span>📐 数学</span>
+                        <span id="mini-label-math">0%</span>
+                    </label>
+                    <div class="mini-bar">
+                        <div class="mini-bar-fill" id="mini-math" style="width:0%;background:var(--math-color)"></div>
+                    </div>
+                </div>
+                <div class="mini-progress">
+                    <label>
+                        <span>📝 语文</span>
+                        <span id="mini-label-chinese">0%</span>
+                    </label>
+                    <div class="mini-bar">
+                        <div class="mini-bar-fill" id="mini-chinese" style="width:0%;background:var(--chinese-color)">
+                        </div>
+                    </div>
+                </div>
+                <div class="mini-progress">
+                    <label>
+                        <span>🔤 英语</span>
+                        <span id="mini-label-english">0%</span>
+                    </label>
+                    <div class="mini-bar">
+                        <div class="mini-bar-fill" id="mini-english" style="width:0%;background:var(--english-color)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ====== MAIN ====== -->
+    <main class="main">
+        <div class="topbar">
+            <div class="topbar-breadcrumb">
+                深圳小升初备考 · <span id="topbar-title">主页</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost btn-sm" onclick="navigate('practice', {filter:'mistake'})">🔥 练易错题</button>
+                <button class="btn btn-primary btn-sm" onclick="navigate('exams')">开始模拟考试</button>
+            </div>
+        </div>
+        <div class="page-content" id="page-content">
+            <!-- Content rendered by JS -->
+        </div>
+    </main>
+
+    <!-- ====== BOTTOM NAV（移动端）====== -->
+    <nav class="bottom-nav" id="bottom-nav">
+        <div class="bottom-nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+            <span class="bn-icon">🏠</span>
+            <span class="bn-label">主页</span>
+        </div>
+        <div class="bottom-nav-item" data-page="knowledge" onclick="navigate('knowledge')">
+            <span class="bn-icon">📖</span>
+            <span class="bn-label">知识点</span>
+        </div>
+        <div class="bottom-nav-item" data-page="practice" onclick="navigate('practice')">
+            <span class="bn-icon">✏️</span>
+            <span class="bn-label">练习</span>
+        </div>
+        <div class="bottom-nav-item" data-page="exams" onclick="navigate('exams')">
+            <span class="bn-icon">📝</span>
+            <span class="bn-label">试卷</span>
+        </div>
+        <div class="bottom-nav-item" data-page="errorbook" onclick="navigate('errorbook')">
+            <span class="bn-icon">📕</span>
+            <span class="bn-label">错题本</span>
+        </div>
+    </nav>
+
+    <!-- ====== TOAST ====== -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="data/knowledge.js"></script>
+    <script src="data/questions.js"></script>
+    <script src="data/exams.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>

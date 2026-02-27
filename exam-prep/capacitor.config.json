@@ -1,0 +1,11 @@
+{
+  "appId": "com.shenzhen.examprep",
+  "appName": "深圳小升初备考",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "minWebViewVersion": 60
+  }
+}

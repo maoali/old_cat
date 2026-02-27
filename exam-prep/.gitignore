@@ -1,0 +1,22 @@
+# ============ Node.js ============
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============ Android 构建产物（保留工程源码）============
+android/build/
+android/app/build/
+android/.gradle/
+android/captures/
+android/local.properties
+
+# ============ macOS ============
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ============ IDE / Editor ============
+.idea/
+*.iml
+.vscode/

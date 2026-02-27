@@ -1,0 +1,21 @@
+{
+  "name": "exam-prep",
+  "version": "1.0.0",
+  "description": "> 专为深圳六年级小学生升初中备考设计，完整覆盖小学阶段（1-6年级）数学、语文、英语全部核心考点。",
+  "main": "index.js",
+  "scripts": {
+    "sync": "npx cap sync android",
+    "open:android": "npx cap open android",
+    "build:apk": "cd android && ./gradlew assembleDebug",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0"
+  }
+}
