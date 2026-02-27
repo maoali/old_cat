@@ -2,7 +2,7 @@
 const QUESTIONS_DATA = [
     // =========== 数学题 ===========
     {
-        id: 'q001', subject: 'math', chapter: 'math_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q001', subject: 'math', chapter: 'math_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '计算：3/4 ÷ 3/8 = ?',
         options: ['A. 1/2', 'B. 9/32', 'C. 2', 'D. 8/9'],
         answer: 'C',
@@ -10,7 +10,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q002', subject: 'math', chapter: 'math_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q002', subject: 'math', chapter: 'math_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '一件商品先涨价20%，再降价20%，最终价格与原价相比：',
         options: ['A. 相同', 'B. 少4%', 'C. 少2%', 'D. 多4%'],
         answer: 'B',
@@ -18,7 +18,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q003', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q003', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '圆的半径是3cm，它的面积是（ ）',
         options: ['A. 6π cm²', 'B. 9π cm²', 'C. 3π cm²', 'D. 18π cm²'],
         answer: 'B',
@@ -26,7 +26,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q004', subject: 'math', chapter: 'math_03', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q004', subject: 'math', chapter: 'math_03', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '在地图上，比例尺为1:2000000，量得两城市距离为3cm，两城市实际距离是：',
         options: ['A. 6000km', 'B. 60km', 'C. 6km', 'D. 600000m'],
         answer: 'B',
@@ -34,7 +34,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q005', subject: 'math', chapter: 'math_02', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q005', subject: 'math', chapter: 'math_02', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '下面哪个算式的结果是正确的？',
         options: ['A. 0.5×0.5=0.25', 'B. 0.5×0.5=0.05', 'C. 0.5×0.5=2.5', 'D. 0.5×0.5=0.50'],
         answer: 'A',
@@ -42,7 +42,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q006', subject: 'math', chapter: 'math_01', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q006', subject: 'math', chapter: 'math_01', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '计算：100 - (45 + 28) = ?',
         options: ['A. 27', 'B. -27', 'C. 73', 'D. 123'],
         answer: 'A',
@@ -52,7 +52,7 @@ const QUESTIONS_DATA = [
 
 
     {
-        id: 'q007', subject: 'math', chapter: 'math_05', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q007', subject: 'math', chapter: 'math_05', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '数据：7, 8, 9, 10, 100。下列说法正确的是：',
         options: ['A. 平均数是9', 'B. 中位数是9', 'C. 众数是10', 'D. 平均数比中位数小'],
         answer: 'B',
@@ -60,7 +60,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q008', subject: 'math', chapter: 'math_06', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q008', subject: 'math', chapter: 'math_06', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '解方程：x - 8 = 25，x = ?',
         options: ['A. 17', 'B. 33', 'C. 13', 'D. -33'],
         answer: 'B',
@@ -68,7 +68,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q009', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q009', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '等底等高的圆柱和圆锥，圆柱体积是圆锥体积的（ ）倍',
         options: ['A. 1/3', 'B. 3', 'C. 6', 'D. 2'],
         answer: 'B',
@@ -76,14 +76,14 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q010', subject: 'math', chapter: 'math_02', type: 'fillblank', difficulty: 2, isCommonMistake: true,
+        id: 'q010', subject: 'math', chapter: 'math_02', type: 'fillblank', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '把3/5化成百分数是___，把37.5%化成分数是___',
         answer: '60%；3/8',
         explanation: '3/5=3÷5=0.6=60%\n37.5%=37.5/100=375/1000=3/8（约分：÷125）\n⚠️ 百分数化分数步骤：去掉%→以100为分母→约分到最简'
     },
 
     {
-        id: 'q011', subject: 'math', chapter: 'math_03', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q011', subject: 'math', chapter: 'math_03', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '化简比 2/3 : 4/5 = ?',
         options: ['A. 1/2', 'B. 2:4', 'C. 5:6', 'D. 10:12'],
         answer: 'C',
@@ -91,7 +91,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q012', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q012', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '一个梯形，上底4cm，下底6cm，高5cm，面积是：',
         options: ['A. 25cm²', 'B. 15cm²', 'C. 30cm²', 'D. 50cm²'],
         answer: 'A',
@@ -99,7 +99,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q013', subject: 'math', chapter: 'math_05', type: 'choice', difficulty: 1, isCommonMistake: false,
+        id: 'q013', subject: 'math', chapter: 'math_05', type: 'choice', difficulty: 1, isCommonMistake: false, grade: 6,
         question: '一个扇形统计图中某部分圆心角是90°，该部分占总数的：',
         options: ['A. 25%', 'B. 90%', 'C. 30%', 'D. 45%'],
         answer: 'A',
@@ -107,7 +107,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q014', subject: 'math', chapter: 'math_03', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q014', subject: 'math', chapter: 'math_03', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '甲和乙的钱数之比是3:5，两人共有160元，甲有多少元？',
         options: ['A. 60元', 'B. 96元', 'C. 32元', 'D. 80元'],
         answer: 'A',
@@ -115,7 +115,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q015', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q015', subject: 'math', chapter: 'math_04', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '下面哪三条线段不能组成三角形？',
         options: ['A. 3cm, 4cm, 5cm', 'B. 2cm, 3cm, 6cm', 'C. 5cm, 6cm, 7cm', 'D. 1cm, 2cm, 2cm'],
         answer: 'B',
@@ -124,7 +124,7 @@ const QUESTIONS_DATA = [
 
     // =========== 语文题 ===========
     {
-        id: 'q101', subject: 'chinese', chapter: 'cn_01', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q101', subject: 'chinese', chapter: 'cn_01', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '"银行"中"行"的读音是：',
         options: ['A. xíng', 'B. háng', 'C. héng', 'D. hàng'],
         answer: 'B',
@@ -132,7 +132,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q102', subject: 'chinese', chapter: 'cn_01', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q102', subject: 'chinese', chapter: 'cn_01', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '下列词语中，"燥"字使用正确的是：',
         options: ['A. 嘈燥', 'B. 急燥', 'C. 干燥', 'D. 洗燥'],
         answer: 'C',
@@ -140,7 +140,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q103', subject: 'chinese', chapter: 'cn_03', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q103', subject: 'chinese', chapter: 'cn_03', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '下列句子中没有语病的是：',
         options: ['A. 通过这次活动，使我们懂得了合作的重要性。', 'B. 我们要大约在三点钟左右到达。', 'C. 他是班级里最优秀的学生之一。', 'D. 老师和同学们都喜欢小明活泼的性格和品质。'],
         answer: 'C',
@@ -148,7 +148,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q104', subject: 'chinese', chapter: 'cn_03', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q104', subject: 'chinese', chapter: 'cn_03', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '选择正确的词填写：他（　）地跑向终点。',
         options: ['A. 快乐的', 'B. 快乐地', 'C. 快乐得', 'D. 快快乐乐'],
         answer: 'B',
@@ -156,7 +156,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q105', subject: 'chinese', chapter: 'cn_02', type: 'choice', difficulty: 3, isCommonMistake: true,
+        id: 'q105', subject: 'chinese', chapter: 'cn_02', type: 'choice', difficulty: 3, isCommonMistake: true, grade: 6,
         question: '"差强人意"这个成语的意思是：',
         options: ['A. 非常令人满意', 'B. 勉强令人满意', 'C. 令人非常失望', 'D. 差一点就满意了'],
         answer: 'B',
@@ -164,14 +164,14 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q106', subject: 'chinese', chapter: 'cn_04', type: 'fillblank', difficulty: 2, isCommonMistake: false,
+        id: 'q106', subject: 'chinese', chapter: 'cn_04', type: 'fillblank', difficulty: 2, isCommonMistake: false, grade: 6,
         question: '《石灰吟》的作者是___，朝代是___。诗句"粉骨碎身全不怕，___"',
         answer: '于谦；明代；要留清白在人间',
         explanation: '《石灰吟》—于谦（明朝）\n全诗：千锤万凿出深山，烈火焚烧若等闲。粉骨碎身全不怕，要留清白在人间。\n⚠️ 注意：于谦是明代诗人，不要混淆了其他朝代！'
     },
 
     {
-        id: 'q107', subject: 'chinese', chapter: 'cn_03', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q107', subject: 'chinese', chapter: 'cn_03', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '"弯弯的月亮像一把镰刀"使用的修辞手法是：',
         options: ['A. 拟人', 'B. 排比', 'C. 比喻', 'D. 夸张'],
         answer: 'C',
@@ -179,7 +179,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q108', subject: 'chinese', chapter: 'cn_01', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q108', subject: 'chinese', chapter: 'cn_01', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '"的、地、得"用法，选择填写正确的一项：他高兴（　）蹦了起来。',
         options: ['A. 的', 'B. 地', 'C. 得', 'D. 都可以'],
         answer: 'C',
@@ -187,7 +187,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q109', subject: 'chinese', chapter: 'cn_05', type: 'choice', difficulty: 1, isCommonMistake: false,
+        id: 'q109', subject: 'chinese', chapter: 'cn_05', type: 'choice', difficulty: 1, isCommonMistake: false, grade: 6,
         question: '下列说明方法中，"据统计，地球上约有875万种物种"所使用的是：',
         options: ['A. 举例子', 'B. 列数字', 'C. 作比较', 'D. 打比方'],
         answer: 'B',
@@ -195,7 +195,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q110', subject: 'chinese', chapter: 'cn_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q110', subject: 'chinese', chapter: 'cn_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '"改进"与"改善"的区别，选用正确的一项：',
         options: ['A. 改进工作条件', 'B. 改善工作方法', 'C. 改进教学方法', 'D. 改进生活状况'],
         answer: 'C',
@@ -204,7 +204,7 @@ const QUESTIONS_DATA = [
 
     // =========== 英语题 ===========
     {
-        id: 'q201', subject: 'english', chapter: 'en_01', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q201', subject: 'english', chapter: 'en_01', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '动词 "go" 的过去式是：',
         options: ['A. goed', 'B. went', 'C. goed', 'D. goes'],
         answer: 'B',
@@ -212,7 +212,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q202', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q202', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '选择正确的冠词：I waited for ___ hour at the bus stop.',
         options: ['A. a', 'B. an', 'C. the', 'D. 不需要冠词'],
         answer: 'B',
@@ -220,7 +220,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q203', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q203', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '选择正确的句子：',
         options: ['A. She like apples.', 'B. She likes apples.', 'C. She liking apples.', 'D. She liked apples every day.'],
         answer: 'B',
@@ -228,7 +228,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q204', subject: 'english', chapter: 'en_01', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q204', subject: 'english', chapter: 'en_01', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '"child"的复数是：',
         options: ['A. childs', 'B. childes', 'C. children', 'D. child'],
         answer: 'C',
@@ -236,7 +236,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q205', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q205', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '把"She goes to school."变为特殊疑问句"她去哪里？"正确的是：',
         options: ['A. Where she goes?', 'B. Where does she go?', 'C. Where she go?', 'D. Where do she goes?'],
         answer: 'B',
@@ -244,7 +244,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q206', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q206', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '下列划线词语用法正确的是：',
         options: ['A. I have a homework to do.', 'B. She gave me some advice.', 'C. There are many informations.', 'D. I need three breads.'],
         answer: 'B',
@@ -252,7 +252,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q207', subject: 'english', chapter: 'en_01', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q207', subject: 'english', chapter: 'en_01', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '"good"的最高级是：',
         options: ['A. goodest', 'B. more good', 'C. most good', 'D. best'],
         answer: 'D',
@@ -260,7 +260,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q208', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 1, isCommonMistake: true,
+        id: 'q208', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 1, isCommonMistake: true, grade: 6,
         question: '"read"的过去式发音是：',
         options: ['A. /riːd/（和原形一样）', 'B. /red/（像red颜色）', 'C. /reɪd/', 'D. /riːdɪd/'],
         answer: 'B',
@@ -268,7 +268,7 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q209', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true,
+        id: 'q209', subject: 'english', chapter: 'en_02', type: 'choice', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '选择正确的比较级句子：',
         options: ['A. She is more tall than me.', 'B. She is taller than me.', 'C. She is taller than I am taller.', 'D. She is the taller in our class.'],
         answer: 'B',
@@ -276,9 +276,27 @@ const QUESTIONS_DATA = [
     },
 
     {
-        id: 'q210', subject: 'english', chapter: 'en_01', type: 'fillblank', difficulty: 2, isCommonMistake: true,
+        id: 'q210', subject: 'english', chapter: 'en_01', type: 'fillblank', difficulty: 2, isCommonMistake: true, grade: 6,
         question: '写出下列动词的过去式：buy→___，teach→___，leave→___',
         answer: 'bought；taught；left',
         explanation: '不规则动词过去式（必须记忆）：\nbuy→bought（购买）\nteach→taught（教）\nleave→left（离开）\n⚠️ 这三个动词都是不规则变化，不能加-ed！'
-    }
+    },
+    // ============== LOWER GRADES MOCK DATA ==============
+    { id: 'q1_m1', subject: 'math', grade: 1, type: 'choice', difficulty: 1, isCommonMistake: false, question: '1 + 1 = ?', options: ['A. 1', 'B. 2', 'C. 3', 'D. 4'], answer: 'B', explanation: '基础加法' },
+    { id: 'q2_m1', subject: 'math', grade: 2, type: 'choice', difficulty: 1, isCommonMistake: false, question: '2 × 3 = ?', options: ['A. 5', 'B. 6', 'C. 8', 'D. 9'], answer: 'B', explanation: '乘法口诀' },
+    { id: 'q3_m1', subject: 'math', grade: 3, type: 'choice', difficulty: 1, isCommonMistake: false, question: '12 ÷ 4 = ?', options: ['A. 2', 'B. 3', 'C. 4', 'D. 6'], answer: 'B', explanation: '基础除法' },
+    { id: 'q4_m1', subject: 'math', grade: 4, type: 'choice', difficulty: 1, isCommonMistake: false, question: '1/2 + 1/2 = ?', options: ['A. 1/4', 'B. 1/2', 'C. 1', 'D. 2'], answer: 'C', explanation: '同分母分数加法' },
+    { id: 'q5_m1', subject: 'math', grade: 5, type: 'choice', difficulty: 1, isCommonMistake: false, question: '0.5 × 10 = ?', options: ['A. 0.05', 'B. 5', 'C. 50', 'D. 500'], answer: 'B', explanation: '小数乘法' },
+
+    { id: 'q1_c1', subject: 'chinese', grade: 1, type: 'choice', difficulty: 1, isCommonMistake: false, question: '拼音：b + a = ?', options: ['A. ba', 'B. pa', 'C. ma', 'D. fa'], answer: 'A', explanation: '声母韵母拼读' },
+    { id: 'q2_c1', subject: 'chinese', grade: 2, type: 'choice', difficulty: 1, isCommonMistake: false, question: '组词：___好', options: ['A. 水', 'B. 美', 'C. 山', 'D. 树'], answer: 'B', explanation: '美好' },
+    { id: 'q3_c1', subject: 'chinese', grade: 3, type: 'choice', difficulty: 1, isCommonMistake: false, question: '反义词：长 - ?', options: ['A. 高', 'B. 远', 'C. 短', 'D. 粗'], answer: 'C', explanation: '反义词对应' },
+    { id: 'q4_c1', subject: 'chinese', grade: 4, type: 'choice', difficulty: 1, isCommonMistake: false, question: '修改病句：他很高兴地哭了。', options: ['A. 他高兴地笑了', 'B. 他悲伤地哭了', 'C. 他激动地哭了', 'D. A或C都对'], answer: 'D', explanation: '词语搭配' },
+    { id: 'q5_c1', subject: 'chinese', grade: 5, type: 'choice', difficulty: 1, isCommonMistake: false, question: '诗句补充：床前___光', options: ['A. 月', 'B. 星', 'C. 阳', 'D. 灯'], answer: 'A', explanation: '静夜思' },
+
+    { id: 'q1_e1', subject: 'english', grade: 1, type: 'choice', difficulty: 1, isCommonMistake: false, question: 'What is A?', options: ['A. Apple', 'B. Banana', 'C. Cat', 'D. Dog'], answer: 'A', explanation: 'A for Apple' },
+    { id: 'q2_e1', subject: 'english', grade: 2, type: 'choice', difficulty: 1, isCommonMistake: false, question: 'Greeting: Good ___', options: ['A. Morning', 'B. Yellow', 'C. Book', 'D. Run'], answer: 'A', explanation: 'Good Morning' },
+    { id: 'q3_e1', subject: 'english', grade: 3, type: 'choice', difficulty: 1, isCommonMistake: false, question: 'I ___ a boy.', options: ['A. is', 'B. am', 'C. are', 'D. be'], answer: 'B', explanation: 'I am' },
+    { id: 'q4_e1', subject: 'english', grade: 4, type: 'choice', difficulty: 1, isCommonMistake: false, question: 'He ___ an apple.', options: ['A. have', 'B. has', 'C. having', 'D. had'], answer: 'B', explanation: 'He has' },
+    { id: 'q5_e1', subject: 'english', grade: 5, type: 'choice', difficulty: 1, isCommonMistake: false, question: 'Past tense of go is ___', options: ['A. goed', 'B. went', 'C. gone', 'D. goes'], answer: 'B', explanation: 'went' }
 ];

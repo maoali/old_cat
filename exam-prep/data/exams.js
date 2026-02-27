@@ -5,6 +5,7 @@ const EXAMS_DATA = [
         title: '数学模拟试卷（一）',
         subject: 'math',
         subjectName: '数学',
+        grade: 6,
         duration: 90,
         totalScore: 120,
         sections: [
@@ -76,6 +77,7 @@ const EXAMS_DATA = [
         title: '语文模拟试卷（一）',
         subject: 'chinese',
         subjectName: '语文',
+        grade: 6,
         duration: 90,
         totalScore: 120,
         sections: [
@@ -116,6 +118,7 @@ const EXAMS_DATA = [
         title: '英语模拟试卷（一）',
         subject: 'english',
         subjectName: '英语',
+        grade: 6,
         duration: 60,
         totalScore: 100,
         sections: [
@@ -162,6 +165,7 @@ const EXAMS_DATA = [
         title: '数学模拟试卷（二）',
         subject: 'math',
         subjectName: '数学',
+        grade: 6,
         duration: 90,
         totalScore: 120,
         sections: [
@@ -212,6 +216,7 @@ const EXAMS_DATA = [
         title: '数学模拟试卷（三）',
         subject: 'math',
         subjectName: '数学',
+        grade: 6,
         duration: 90,
         totalScore: 120,
         sections: [
@@ -262,6 +267,7 @@ const EXAMS_DATA = [
         title: '语文模拟试卷（二）',
         subject: 'chinese',
         subjectName: '语文',
+        grade: 6,
         duration: 90,
         totalScore: 120,
         sections: [
@@ -303,6 +309,7 @@ const EXAMS_DATA = [
         title: '语文模拟试卷（三）',
         subject: 'chinese',
         subjectName: '语文',
+        grade: 6,
         duration: 90,
         totalScore: 120,
         sections: [
@@ -344,6 +351,7 @@ const EXAMS_DATA = [
         title: '英语模拟试卷（二）',
         subject: 'english',
         subjectName: '英语',
+        grade: 6,
         duration: 60,
         totalScore: 100,
         sections: [
@@ -389,6 +397,7 @@ const EXAMS_DATA = [
         title: '英语模拟试卷（三）',
         subject: 'english',
         subjectName: '英语',
+        grade: 6,
         duration: 60,
         totalScore: 100,
         sections: [
@@ -424,6 +433,31 @@ const EXAMS_DATA = [
                 questions: [
                     { id: 'en3_17', question: 'Write a letter (60-80 words) to a pen pal about your school life.\n\nInclude:\n- Your school name and grade\n- Your favorite subject and why\n- An activity you do after school\n- One thing you are looking forward to', answer: '（学生自由作答）', points: 15, explanation: '评分：内容完整(5)、语法准确(5)、语言流利(5)' },
                     { id: 'en3_18', question: 'Translation (Chinese to English):\n(1) 我已经完成了我的家庭作业。\n(2) 他住得离学校太远，所以每天乘公共汽车。\n(3) 如果明天不下雨，我们将去公园。', answer: '(1) I have already finished my homework.\n(2) He lives too far from school, so he takes a bus every day.\n(3) If it doesn\'t rain tomorrow, we will go to the park.', points: 15, explanation: '(1)现在完成时have+p.p.；(2)too far+so结果；(3)条件句if+一般现在时' }
+                ]
+            }
+        ]
+    },
+    // ============== LOWER GRADES MOCK DATA ==============
+    {
+        id: 'exam_g5_math_01',
+        grade: 5,
+        title: '五年级数学期末模拟试卷',
+        subject: 'math',
+        subjectName: '数学',
+        duration: 45,
+        totalScore: 100,
+        sections: [
+            {
+                id: 'g5_m_s1', name: '一、基础计算（共50分）', type: 'choice', score: 10,
+                questions: [
+                    { id: 'g5_m01', question: '0.5 × 10 = ?', options: ['A. 0.05', 'B. 5', 'C. 50', 'D. 500'], answer: 'B', points: 25, explanation: '小数乘法' },
+                    { id: 'g5_m02', question: '1/2 + 1/2 = ?', options: ['A. 1/4', 'B. 1/2', 'C. 1', 'D. 2'], answer: 'C', points: 25, explanation: '分数加法' }
+                ]
+            },
+            {
+                id: 'g5_m_s2', name: '二、应用题（共50分）', type: 'solve', score: 0,
+                questions: [
+                    { id: 'g5_m03', question: '小明有10个苹果，吃了4个，还剩几个？', answer: '6', points: 50, explanation: '10 - 4 = 6' }
                 ]
             }
         ]

@@ -17,10 +17,18 @@
             <h1>深圳小升初<br>备考系统</h1>
             <p>六年级考点全覆盖</p>
         </div>
+        
+        <div class="sidebar-user" id="sidebar-user-badge">
+            <!-- User info rendered here -->
+        </div>
+
         <nav class="sidebar-nav">
             <div class="nav-section-label">总览</div>
             <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
                 <span class="icon">🏠</span> 主页
+            </div>
+            <div class="nav-item" data-page="grade-select" onclick="navigate('grade-select')">
+                <span class="icon">🎓</span> 年级选择
             </div>
 
             <div class="nav-section-label" style="margin-top:8px">学习</div>
@@ -102,6 +110,8 @@
     <script src="data/knowledge.js"></script>
     <script src="data/questions.js"></script>
     <script src="data/exams.js"></script>
+    <script src="js/users.js"></script>
+    <script src="js/grade-select.js"></script>
     <script src="js/app.js"></script>
 
 </body>

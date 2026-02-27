@@ -5,15 +5,22 @@ const STATE = {
   practiceIndex: 0,
   practiceQuestions: [],
   examState: null,
-  errorBook: JSON.parse(localStorage.getItem('errorBook') || '[]'),
-  progress: JSON.parse(localStorage.getItem('progress') || '{}'),
-  examResults: JSON.parse(localStorage.getItem('examResults') || '[]'),
+  errorBook: [],
+  progress: {},
+  examResults: [],
+  currentUserId: null,
+  selectedGrade: 6,
 };
 
 function saveState() {
-  localStorage.setItem('errorBook', JSON.stringify(STATE.errorBook));
-  localStorage.setItem('progress', JSON.stringify(STATE.progress));
-  localStorage.setItem('examResults', JSON.stringify(STATE.examResults));
+  // Delegate to per-user save if available
+  if (typeof saveStateForCurrentUser === 'function') {
+    saveStateForCurrentUser();
+  } else {
+    localStorage.setItem('errorBook', JSON.stringify(STATE.errorBook));
+    localStorage.setItem('progress', JSON.stringify(STATE.progress));
+    localStorage.setItem('examResults', JSON.stringify(STATE.examResults));
+  }
 }
 
 // ============ ROUTER ============
@@ -36,7 +43,8 @@ function getPageTitle(page) {
     practice: '易错题练习',
     exams: '模拟试卷',
     errorbook: '错题本',
-    report: '学习报告'
+    report: '学习报告',
+    'grade-select': '年级选择',
   };
   return titles[page] || page;
 }
@@ -52,6 +60,7 @@ function renderPage(page, params) {
     case 'exam-result': return renderExamResult(params);
     case 'errorbook': return renderErrorBook();
     case 'report': return renderReport();
+    case 'grade-select': return (typeof renderGradeSelectPage === 'function') ? renderGradeSelectPage() : '<p>年级选择模块加载中...</p>';
     default: return renderDashboard();
   }
 }
@@ -59,10 +68,14 @@ function renderPage(page, params) {
 // ---- DASHBOARD ----
 function renderDashboard() {
   const stats = getStats();
+  const user = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+  const gradeCfg = (typeof GRADE_CONFIG !== 'undefined') ? (GRADE_CONFIG[STATE.selectedGrade] || GRADE_CONFIG[6]) : null;
+  const gradeLabel = gradeCfg ? `${gradeCfg.emoji} ${gradeCfg.label}` : '六年级';
+  const greetName = user ? user.name : '同学';
   return `
     <div class="dashboard-header">
-      <h2>📚 你好！升初中冲刺中</h2>
-      <p>2026年深圳小学升初中备考系统 · 全面掌握知识点、攻克易错题</p>
+      <h2>📚 你好，${escHtml(greetName)}！</h2>
+      <p>当前年级：<strong style="color:${gradeCfg?.color || 'var(--accent-blue)'}">${gradeLabel}</strong> &nbsp;·&nbsp; <a href="#" onclick="navigate('grade-select');return false;">切换年级</a></p>
     </div>
     <div class="stats-grid">
       <div class="stat-card">
@@ -114,11 +127,13 @@ function renderDashboard() {
 function renderSubjectCard(subjectKey) {
   const subject = KNOWLEDGE_DATA[subjectKey];
   const sp = getSubjectProgress(subjectKey);
+  const filteredChapters = subject.chapters.filter(ch => (typeof gradeMatches === 'function') ? gradeMatches(ch.grade, STATE.selectedGrade) : true);
+  const filteredQuestions = QUESTIONS_DATA.filter(q => q.subject === subjectKey && ((typeof gradeMatches === 'function') ? gradeMatches(q.grade, STATE.selectedGrade) : true));
   return `
     <div class="subject-card ${subjectKey}" onclick="navigate('knowledge', {subject:'${subjectKey}'})">
       <span class="subject-emoji">${subject.icon}</span>
       <h3>${subject.name}</h3>
-      <p>${subject.chapters.length} 个章节 · ${QUESTIONS_DATA.filter(q => q.subject === subjectKey).length} 道题</p>
+      <p>${filteredChapters.length} 个章节 · ${filteredQuestions.length} 道题</p>
       <div class="subject-progress-bar">
         <div class="subject-progress-fill" style="width:${sp.accuracy}%"></div>
       </div>
@@ -155,6 +170,7 @@ function getSubjectProgress(subject) {
 // ---- KNOWLEDGE ----
 function renderKnowledge() {
   const activeSubject = STATE.params?.subject || 'all';
+  const selectedGrade = STATE.selectedGrade || 6;
   return `
     <div class="knowledge-filters">
       <button class="filter-btn ${activeSubject === 'all' ? 'active' : ''}" onclick="navigate('knowledge', {subject:'all'})">全部</button>
@@ -164,12 +180,18 @@ function renderKnowledge() {
     </div>
     ${Object.entries(KNOWLEDGE_DATA)
       .filter(([key]) => activeSubject === 'all' || key === activeSubject)
-      .map(([key, subject]) => `
-        <div class="section-divider">
-          <h3>${subject.icon} ${subject.name}</h3>
-        </div>
-        ${subject.chapters.map(ch => renderChapterAccordion(ch, key)).join('')}
-      `).join('')}
+      .map(([key, subject]) => {
+        const filteredChapters = subject.chapters.filter(ch =>
+          (typeof gradeMatches === 'function') ? gradeMatches(ch.grade, selectedGrade) : true
+        );
+        if (filteredChapters.length === 0) return '';
+        return `
+          <div class="section-divider">
+            <h3>${subject.icon} ${subject.name}</h3>
+          </div>
+          ${filteredChapters.map(ch => renderChapterAccordion(ch, key)).join('')}
+        `;
+      }).join('')}
   `;
 }
 
@@ -327,11 +349,15 @@ function renderQuestionCard(q, index, total) {
 
 // ---- EXAMS ----
 function renderExams() {
+  const selectedGrade = STATE.selectedGrade || 6;
+  const filteredExams = EXAMS_DATA.filter(exam =>
+    (typeof gradeMatches === 'function') ? gradeMatches(exam.grade, selectedGrade) : true
+  );
   return `
     <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:6px">模拟试卷</h2>
     <p style="color:var(--text-secondary);font-size:0.875rem;margin-bottom:24px">按科目选择模拟试卷，计时作答，自动批改评分</p>
     <div class="exam-list">
-      ${EXAMS_DATA.map(exam => `
+      ${filteredExams.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:40px">当前年级暂无试卷，<a href="#" onclick="navigate(\'grade-select\')">切换年级</a>查看其他年级内容</p>' : filteredExams.map(exam => `
         <div class="exam-card" onclick="startExam('${exam.id}')">
           <div class="exam-card-left">
             <h3>${{ 'math': '📐', 'chinese': '📝', 'english': '🔤' }[exam.subject]} ${exam.title}</h3>
@@ -947,5 +973,31 @@ function updateMiniProgress() {
 
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', () => {
+  // Multi-user init: check if user system is available
+  if (typeof getUsers === 'function' && typeof renderUserSelectScreen === 'function') {
+    const users = getUsers();
+    const currentUid = (typeof getCurrentUserId === 'function') ? getCurrentUserId() : null;
+    const currentUser = currentUid ? users.find(u => u.id === currentUid) : null;
+    if (!currentUser) {
+      // No logged-in user: show user select screen
+      document.querySelector('.sidebar').style.display = 'none';
+      document.querySelector('.main').style.display = 'none';
+      const screen = document.createElement('div');
+      screen.innerHTML = renderUserSelectScreen();
+      // Use firstElementChild to skip text nodes created by formatting spaces
+      document.body.appendChild(screen.firstElementChild);
+      if (typeof initUserSelect === 'function') initUserSelect();
+      return;
+    } else {
+      // Load stored user data into STATE
+      if (typeof loadUserToState === 'function') loadUserToState(currentUid);
+      if (typeof updateSidebarUser === 'function') updateSidebarUser();
+    }
+  } else {
+    // Fallback: load from legacy localStorage
+    STATE.errorBook = JSON.parse(localStorage.getItem('errorBook') || '[]');
+    STATE.progress = JSON.parse(localStorage.getItem('progress') || '{}');
+    STATE.examResults = JSON.parse(localStorage.getItem('examResults') || '[]');
+  }
   navigate('dashboard');
 });
