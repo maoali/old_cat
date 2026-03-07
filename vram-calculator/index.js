@@ -82,6 +82,9 @@ const els = {
   expertsPerToken: $('experts-per-token'),
   presetNameDisplay: $('preset-name-display'),
   moeRow: $('moe-row'),
+  hfManualInput: $('hf-manual-input'),
+  hfManualBtn: $('hf-manual-btn'),
+  hfManualStatus: $('hf-manual-status'),
 };
 
 // ===== Preset Name Display =====
@@ -203,6 +206,117 @@ function setHFLoading(loading) {
   } else {
     els.hfBtn.classList.remove('loading');
     els.hfBtn.querySelector('.hf-btn-text').textContent = '更新模型';
+  }
+}
+
+function setHFManualStatus(message, type) {
+  els.hfManualStatus.textContent = message;
+  els.hfManualStatus.className = `hf-status show ${type}`;
+  if (type === 'success') {
+    setTimeout(() => {
+      els.hfManualStatus.className = 'hf-status';
+      els.hfManualStatus.textContent = '';
+    }, 8000);
+  }
+}
+
+function setHFManualLoading(loading) {
+  if (loading) {
+    els.hfManualBtn.classList.add('loading');
+    els.hfManualBtn.querySelector('.hf-btn-text').textContent = '查找中…';
+    els.hfManualInput.disabled = true;
+  } else {
+    els.hfManualBtn.classList.remove('loading');
+    els.hfManualBtn.querySelector('.hf-btn-text').textContent = '查找';
+    els.hfManualInput.disabled = false;
+  }
+}
+
+async function fetchSingleModel(modelId) {
+  if (!modelId) {
+    setHFManualStatus('请先输入模型 ID', 'error');
+    return;
+  }
+
+  modelId = modelId.trim();
+  setHFManualLoading(true);
+  setHFManualStatus(`正在查询 ${modelId}…`, 'loading');
+
+  try {
+    // 1. 获取模型信息（为获取 safetensors.total 判断参数量）
+    const infoResp = await fetch(`${HF_API_BASE}/api/models/${modelId}?expand[]=safetensors`);
+    if (!infoResp.ok) {
+      if (infoResp.status === 404) throw new Error('找不到该模型，请检查 ID 是否正确');
+      if (infoResp.status === 401 || infoResp.status === 403) throw new Error('此模型为私有或受限模型，无法访问');
+      throw new Error(`请求信息失败 (${infoResp.status})`);
+    }
+    const info = await infoResp.json();
+    let totalParams = info.safetensors?.total;
+
+    // 2. 获取 config.json
+    const config = await fetchModelConfig(modelId);
+    if (!config) throw new Error('无法获取 config.json，该模型可能不支持自动解析');
+
+    if (!config.hidden_size || !config.num_hidden_layers || !config.num_attention_heads) {
+      throw new Error('config.json 中缺少关键的架构参数');
+    }
+
+    // 3. 解析参数
+    const paramsInB = totalParams ? +(totalParams / 1e9).toFixed(1) : 0;
+    const layers = config.num_hidden_layers;
+    const hiddenDim = config.hidden_size;
+    const heads = config.num_attention_heads;
+    const kvHeads = config.num_key_value_heads || config.num_attention_heads;
+    const weightBytes = dtypeToBytes(config.torch_dtype);
+    const maxSeqLen = config.max_position_embeddings || null;
+
+    // MoE
+    const nExperts = config.n_routed_experts || config.num_local_experts || config.num_experts || 0;
+    const nActive = config.num_experts_per_tok || config.num_selected_experts || 0;
+
+    // 4. 更新 UI 显示
+    // 如果无法获取 safetensors.total，保持原有输入框的参数不覆盖，但警告用户
+    if (paramsInB > 0) {
+      els.params.value = paramsInB;
+    }
+    els.numLayers.value = layers;
+    els.hiddenDim.value = hiddenDim;
+    els.numHeads.value = heads;
+    els.numKvHeads.value = kvHeads;
+
+    if (weightBytes != null) els.weightPrecision.value = weightBytes;
+    if (maxSeqLen && maxSeqLen > 0) els.seqLen.value = maxSeqLen;
+
+    if (nExperts > 0 && nActive > 0) {
+      els.numExperts.value = nExperts;
+      els.expertsPerToken.value = nActive;
+      els.moeRow.style.display = '';
+    } else {
+      els.numExperts.value = 0;
+      els.expertsPerToken.value = 0;
+      els.moeRow.style.display = 'none';
+    }
+
+    // 清空 preset 选择，并显示自定义名称
+    els.preset.value = "";
+    els.presetNameDisplay.textContent = modelId;
+    els.presetNameDisplay.title = modelId;
+    els.presetNameDisplay.classList.add('visible');
+
+    // 触发计算
+    const result = calculate();
+    render(result);
+
+    const msg = paramsInB > 0
+      ? `✓ 成功解析 ${modelId}`
+      : `✓ 已解析架构，但未能获取总参数量，请手动确认参数量(B)`;
+    setHFManualStatus(msg, paramsInB > 0 ? 'success' : 'warning');
+
+  } catch (err) {
+    console.error('Fetch single model error:', err);
+    setHFManualStatus(`✗ 解析失败：${err.message}`, 'error');
+  } finally {
+    setHFManualLoading(false);
   }
 }
 
@@ -535,6 +649,17 @@ els.preset.addEventListener('change', () => {
 
 els.hfBtn.addEventListener('click', () => {
   fetchHFModels();
+});
+
+els.hfManualBtn.addEventListener('click', () => {
+  fetchSingleModel(els.hfManualInput.value);
+});
+
+els.hfManualInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    els.hfManualBtn.click();
+  }
 });
 
 // ===== Init =====

@@ -262,6 +262,85 @@ body {
   display: block;
 }
 
+/* HF Manual Input */
+.hf-manual-wrapper {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.hf-manual-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  transition: all var(--transition);
+}
+
+.hf-manual-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  outline: none;
+}
+
+.hf-manual-input::placeholder {
+  color: var(--text-muted);
+}
+
+.hf-lookup-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--accent-bright);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.hf-lookup-btn:hover {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.hf-lookup-btn:active {
+  transform: translateY(0);
+}
+
+.hf-lookup-btn .hf-spinner {
+  display: none;
+}
+
+.hf-lookup-btn.loading .hf-icon {
+  display: none;
+}
+
+.hf-lookup-btn.loading .hf-spinner {
+  display: block;
+  animation: spin 1s linear infinite;
+}
+
+.hf-lookup-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
 /* HuggingFace Update Button */
 .hf-update-btn {
   display: flex;
