@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>围棋小熊猫 - 儿童围棋游戏</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+.screen {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  animation: fadeIn 0.4s ease;
+}
+.screen.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes glow {
+  0%,100% { box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+  50% { box-shadow: 0 0 30px rgba(255,215,0,1), 0 0 60px rgba(255,165,0,0.8); }
+}
+@keyframes glowBlue {
+  0%,100% { box-shadow: 0 0 10px rgba(100,200,255,0.5); }
+  50% { box-shadow: 0 0 30px rgba(100,200,255,1), 0 0 60px rgba(50,150,255,0.8); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+@keyframes slideInLeft { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.btn {
+  padding: 14px 32px; font-size: 20px; border: none; border-radius: 50px;
+  cursor: pointer; font-family: inherit; font-weight: bold;
+  transition: all 0.2s; position: relative; overflow: hidden;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+.btn:hover { transform: scale(1.08); }
+.btn:active { transform: scale(0.95); }
+.btn::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.4s;
+}
+.btn:hover::after { left: 100%; }
+.btn-primary { background: linear-gradient(135deg, #ff6b35, #f7c59f); color: #fff; }
+.btn-secondary { background: linear-gradient(135deg, #4ecdc4, #45b7d1); color: #fff; }
+.btn-danger { background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; }
+.btn-success { background: linear-gradient(135deg, #2ed573, #7bed9f); color: #fff; }
+.btn-purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); color: #fff; }
+.btn-small { padding: 10px 22px; font-size: 16px; }
+.btn-large { padding: 18px 44px; font-size: 24px; }
+
+/* MAIN MENU */
+#mainMenu { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.panda-mascot {
+  font-size: 100px; animation: bounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+  cursor: default;
+}
+.game-title {
+  font-size: 52px; font-weight: bold;
+  background: linear-gradient(135deg, #ffd700, #ffa500, #ff6b35);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none; margin: 10px 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+.game-subtitle { color: rgba(255,255,255,0.8); font-size: 20px; margin-bottom: 30px; }
+.menu-buttons { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.menu-buttons .btn { width: 220px; text-align: center; }
+.version-text { color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 20px; }
+
+/* MODE SELECT */
+#modeSelect { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.mode-title { font-size: 36px; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin-bottom: 30px; }
+.mode-cards { display: flex; gap: 30px; }
+.mode-card {
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.3); border-radius: 20px;
+  padding: 30px; text-align: center; cursor: pointer;
+  transition: all 0.3s; width: 200px; color: #fff;
+}
+.mode-card:hover { transform: translateY(-10px) scale(1.05); background: rgba(255,255,255,0.25); }
+.mode-card .icon { font-size: 60px; margin-bottom: 15px; }
+.mode-card h3 { font-size: 24px; margin-bottom: 8px; }
+.mode-card p { font-size: 14px; opacity: 0.8; }
+
+/* CAMPAIGN SCREEN */
+#campaignScreen { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); overflow-y: auto; padding: 20px; }
+.campaign-header { text-align: center; color: #fff; margin-bottom: 20px; }
+.campaign-header h2 { font-size: 32px; color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+.player-title-badge {
+  display: inline-block; padding: 8px 20px; background: linear-gradient(135deg, #ffd700, #ffa500);
+  border-radius: 50px; color: #333; font-size: 16px; font-weight: bold; margin-top: 8px;
+}
+.level-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 12px; max-width: 700px; margin: 0 auto;
+}
+.level-cell {
+  aspect-ratio: 1; border-radius: 16px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.3s; font-size: 13px; padding: 8px; text-align: center;
+  position: relative;
+}
+.level-cell.unlocked {
+  background: linear-gradient(135deg, #00b09b, #96c93d);
+  color: #fff; box-shadow: 0 4px 15px rgba(0,176,155,0.4);
+}
+.level-cell.unlocked:hover { transform: scale(1.1); box-shadow: 0 8px 25px rgba(0,176,155,0.6); }
+.level-cell.completed {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: #fff; box-shadow: 0 4px 15px rgba(240,147,251,0.4);
+}
+.level-cell.completed:hover { transform: scale(1.1); }
+.level-cell.locked {
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+  cursor: not-allowed; border: 2px solid rgba(255,255,255,0.1);
+}
+.level-cell .level-num { font-size: 20px; font-weight: bold; }
+.level-cell .level-icon { font-size: 20px; }
+.level-cell .level-info { font-size: 10px; opacity: 0.8; }
+.campaign-back { margin-top: 20px; }
+
+/* DIFFICULTY SCREEN */
+#difficultyScreen { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
+.diff-title { font-size: 36px; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin-bottom: 10px; }
+.diff-subtitle { color: rgba(255,255,255,0.8); font-size: 16px; margin-bottom: 30px; }
+.diff-cards { display: flex; gap: 20px; }
+.diff-card {
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+  border: 3px solid rgba(255,255,255,0.3); border-radius: 20px;
+  padding: 25px 20px; text-align: center; cursor: pointer;
+  transition: all 0.3s; width: 160px; color: #fff;
+}
+.diff-card:hover { transform: translateY(-8px) scale(1.05); background: rgba(255,255,255,0.3); }
+.diff-card .d-icon { font-size: 50px; margin-bottom: 10px; }
+.diff-card h3 { font-size: 22px; margin-bottom: 8px; }
+.diff-card p { font-size: 12px; opacity: 0.8; }
+
+/* BOARD SELECT */
+.board-select-title { font-size: 24px; color: #fff; margin-bottom: 15px; }
+.board-btns { display: flex; gap: 15px; margin-bottom: 20px; }
+.board-btn {
+  padding: 10px 24px; font-size: 16px; border: 3px solid rgba(255,255,255,0.5);
+  border-radius: 50px; background: rgba(255,255,255,0.2); color: #fff;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.board-btn.selected, .board-btn:hover { background: rgba(255,255,255,0.5); border-color: #fff; transform: scale(1.05); }
+
+/* GAME SCREEN */
+#gameScreen {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  flex-direction: row; align-items: center; justify-content: center;
+  gap: 16px; padding: 10px;
+}
+.player-card {
+  background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 20px; padding: 20px 16px; text-align: center;
+  width: 130px; flex-shrink: 0; transition: all 0.3s; color: #fff;
+}
+.player-card.active {
+  background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.6);
+  animation: glow 1.5s ease-in-out infinite;
+}
+.player-card.ai-active {
+  background: rgba(100,200,255,0.15); border-color: rgba(100,200,255,0.6);
+  animation: glowBlue 1.5s ease-in-out infinite;
+}
+.player-avatar { font-size: 42px; margin-bottom: 8px; }
+.player-name { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+.player-stone-indicator {
+  width: 20px; height: 20px; border-radius: 50%; margin: 4px auto;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+.stone-black { background: radial-gradient(circle at 35% 35%, #555, #000); }
+.stone-white { background: radial-gradient(circle at 35% 35%, #fff, #bbb); border: 1px solid #ccc; }
+.capture-count { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 8px; }
+.capture-count span { font-size: 22px; color: #ffd700; font-weight: bold; display: block; }
+.turn-label { font-size: 11px; color: rgba(255,215,0,0.8); margin-top: 6px; font-weight: bold; }
+
+.board-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#boardCanvas {
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(212,169,76,0.4), 0 20px 60px rgba(0,0,0,0.6);
+  cursor: crosshair;
+}
+.game-controls { display: flex; gap: 10px; }
+
+/* INFO BAR */
+.info-bar {
+  display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.7); font-size: 13px;
+}
+.info-bar .level-badge {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff; padding: 4px 12px; border-radius: 50px; font-size: 12px;
+}
+.consecutive-passes { color: #ffa500; font-size: 12px; }
+
+/* INACTIVITY POPUP */
+#inactivityPopup {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff6b35, #ffa500);
+  color: #fff; padding: 16px 28px; border-radius: 50px;
+  font-size: 18px; font-weight: bold; z-index: 1000;
+  display: none; animation: bounce 1s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(255,107,53,0.5);
+}
+
+/* RESULT SCREEN */
+#resultScreen { background: linear-gradient(135deg, #11998e, #38ef7d); }
+.result-container { text-align: center; color: #fff; }
+.result-emoji { font-size: 80px; animation: bounce 1s ease-in-out infinite; margin-bottom: 10px; }
+.result-title { font-size: 48px; font-weight: bold; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); margin-bottom: 10px; }
+.result-score { font-size: 22px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 16px 30px; margin: 16px auto; display: inline-block; }
+.result-score div { margin: 6px 0; }
+.title-upgrade {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #333; border-radius: 16px; padding: 16px 24px; margin: 16px auto;
+  display: none; animation: popIn 0.5s ease;
+}
+.title-upgrade h3 { font-size: 20px; margin-bottom: 6px; }
+.title-upgrade p { font-size: 26px; font-weight: bold; }
+.result-buttons { display: flex; gap: 16px; justify-content: center; margin-top: 20px; }
+
+/* CONFETTI */
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px; z-index: 999;
+  animation: confettiFall linear forwards;
+  pointer-events: none;
+}
+
+/* HOVER RING */
+.hover-ring { display: none; }
+
+/* PASS INDICATOR */
+.pass-indicator {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.5); font-size: 18px; pointer-events: none;
+}
+
+/* TERRITORY OVERLAY */
+.territory-display { display: flex; gap: 20px; color: #fff; font-size: 14px; margin-top: 6px; }
+.terr-black { color: #aaa; }
+.terr-white { color: #fff; }
+
+/* Score display */
+.score-bar {
+  display: flex; gap: 16px; color: rgba(255,255,255,0.8); font-size: 14px; align-items: center;
+}
+.score-val { font-size: 18px; font-weight: bold; color: #ffd700; }
+
+/* Scrollbar for campaign */
+#campaignScreen::-webkit-scrollbar { width: 8px; }
+#campaignScreen::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+#campaignScreen::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.btn-back { position: absolute; top: 20px; left: 20px; }
+
+/* STATUS PANEL */
+.status-panel {
+  position: absolute; top: 10px; right: 10px; z-index: 10;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px; padding: 10px 14px; width: 180px;
+}
+.status-panel-title {
+  color: rgba(255,215,0,0.85); font-size: 12px; font-weight: bold;
+  text-align: center; margin-bottom: 8px; letter-spacing: 1px;
+}
+.status-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+}
+.status-item {
+  background: rgba(255,255,255,0.05); border-radius: 8px;
+  padding: 6px 4px; text-align: center;
+}
+.status-label { color: rgba(255,255,255,0.5); font-size: 10px; margin-bottom: 2px; }
+.status-value { color: #fff; font-size: 15px; font-weight: bold; }
+
+/* LOGIN SCREEN */
+#loginScreen { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.login-title { font-size: 36px; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin: 10px 0 6px; }
+.login-subtitle { color: rgba(255,255,255,0.7); font-size: 16px; margin-bottom: 28px; }
+.user-list { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; max-width: 580px; margin-bottom: 20px; min-height: 40px; }
+.user-avatar-card {
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 16px; padding: 14px 18px; text-align: center; cursor: pointer;
+  transition: all 0.2s; color: #fff; min-width: 90px;
+}
+.user-avatar-card:hover { background: rgba(255,255,255,0.3); transform: translateY(-4px) scale(1.05); }
+.user-avatar-card .u-icon { font-size: 36px; margin-bottom: 6px; }
+.user-avatar-card .u-name { font-size: 13px; font-weight: bold; word-break: break-all; }
+.new-user-row { display: flex; gap: 10px; align-items: center; }
+.new-user-input {
+  padding: 12px 18px; border-radius: 50px; border: 2px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15); color: #fff; font-size: 16px;
+  font-family: inherit; outline: none; width: 180px;
+}
+.new-user-input::placeholder { color: rgba(255,255,255,0.5); }
+.new-user-input:focus { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.25); }
+
+/* USER BADGE in main menu */
+.user-badge-btn {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50px; padding: 6px 14px; color: #fff; font-size: 13px;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.user-badge-btn:hover { background: rgba(255,255,255,0.28); }
+
+/* HISTORY SCREEN */
+#historyScreen {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  overflow-y: auto; padding: 20px; justify-content: flex-start; padding-top: 30px;
+}
+.history-header { text-align: center; color: #fff; margin-bottom: 20px; }
+.history-header h2 { font-size: 28px; color: #ffd700; }
+.history-user-sub { color: rgba(255,255,255,0.55); font-size: 13px; margin-top: 4px; }
+.history-list { width: 100%; max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
+.history-item {
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 13px 16px; color: #fff;
+  display: flex; align-items: center; gap: 12px;
+  border-left: 4px solid transparent;
+}
+.history-item.win  { border-left-color: #2ed573; }
+.history-item.lose { border-left-color: #ff4757; }
+.history-item.resign { border-left-color: #ffa502; }
+.hi-icon { font-size: 26px; flex-shrink: 0; }
+.hi-info { flex: 1; min-width: 0; }
+.hi-title { font-size: 13px; font-weight: bold; margin-bottom: 3px; }
+.hi-detail { font-size: 11px; color: rgba(255,255,255,0.5); }
+.hi-right { text-align: right; flex-shrink: 0; }
+.hi-result { font-size: 13px; font-weight: bold; }
+.hi-result.win  { color: #2ed573; }
+.hi-result.lose { color: #ff6b81; }
+.hi-result.resign { color: #ffa502; }
+.hi-date { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+.history-empty { text-align: center; color: rgba(255,255,255,0.4); padding: 50px 20px; font-size: 18px; line-height: 1.8; }
+#historyScreen::-webkit-scrollbar { width: 8px; }
+#historyScreen::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+#historyScreen::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+/* AI thinking indicator */
+.ai-thinking {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.7); color: #fff; padding: 10px 20px;
+  border-radius: 50px; font-size: 14px; display: none; z-index: 100;
+}
+.ai-thinking span { animation: pulse 0.5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="screen">
+  <div class="panda-mascot" style="font-size:70px;animation:bounce 2s ease-in-out infinite">🐼</div>
+  <div class="login-title">围棋小熊猫</div>
+  <div class="login-subtitle">选择你的角色，或者创建新角色</div>
+  <div class="user-list" id="userList"></div>
+  <div class="new-user-row">
+    <input type="text" class="new-user-input" id="newUserInput" placeholder="输入新用户名" maxlength="10"
+      onkeydown="if(event.key==='Enter')App.createUser()">
+    <button class="btn btn-primary btn-small" onclick="App.createUser()">+ 新建</button>
+  </div>
+</div>
+
+<!-- MAIN MENU -->
+<div id="mainMenu" class="screen">
+  <button class="user-badge-btn" id="userBadgeBtn" onclick="App.showLoginScreen()">👤 ...</button>
+  <div class="panda-mascot">🐼</div>
+  <div class="game-title">围棋小熊猫</div>
+  <div class="game-subtitle">快乐学围棋，成为棋坛小达人！</div>
+  <div class="menu-buttons">
+    <button class="btn btn-primary btn-large" onclick="App.showModeSelect()">🎮 开始游戏</button>
+    <button class="btn btn-secondary" onclick="App.showHistory()">📋 历史记录</button>
+    <button class="btn btn-secondary" onclick="App.showHowToPlay()">📖 怎么玩</button>
+    <button class="btn btn-purple" onclick="App.resetProgress()">🔄 重置进度</button>
+  </div>
+  <div class="version-text">v1.0 · 围棋小熊猫</div>
+</div>
+
+<!-- MODE SELECT -->
+<div id="modeSelect" class="screen">
+  <button class="btn btn-secondary btn-small btn-back" onclick="App.showMainMenu()">← 返回</button>
+  <div class="mode-title">选择游戏模式</div>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="App.showCampaign()">
+      <div class="icon">🗺️</div>
+      <h3>闯关模式</h3>
+      <p>挑战30关，解锁称号</p>
+    </div>
+    <div class="mode-card" onclick="App.showDifficultySelect()">
+      <div class="icon">🎯</div>
+      <h3>自由对弈</h3>
+      <p>随心对弈，随意练习</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN SCREEN -->
+<div id="campaignScreen" class="screen">
+  <div class="campaign-header">
+    <button class="btn btn-secondary btn-small" onclick="App.showModeSelect()" style="margin-bottom:10px">← 返回</button>
+    <h2>🗺️ 闯关模式</h2>
+    <div class="player-title-badge" id="playerTitleBadge">🐣 围棋小白</div>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;margin-top:6px">已完成: <span id="completedCount">0</span>/30 关</p>
+  </div>
+  <div class="level-grid" id="levelGrid"></div>
+</div>
+
+<!-- DIFFICULTY SELECT -->
+<div id="difficultyScreen" class="screen">
+  <button class="btn btn-secondary btn-small btn-back" onclick="App.showModeSelect()">← 返回</button>
+  <div class="diff-title">🎯 自由对弈</div>
+  <div class="diff-subtitle">选择棋盘大小</div>
+  <div class="board-btns">
+    <button class="board-btn selected" id="boardBtn9" onclick="App.selectBoardSize(9)">9×9</button>
+    <button class="board-btn" id="boardBtn13" onclick="App.selectBoardSize(13)">13×13</button>
+    <button class="board-btn" id="boardBtn19" onclick="App.selectBoardSize(19)">19×19</button>
+  </div>
+  <div class="diff-subtitle">选择难度</div>
+  <div class="diff-cards">
+    <div class="diff-card" onclick="App.startFreePlay('easy')">
+      <div class="d-icon">🌸</div>
+      <h3>简单</h3>
+      <p>随机落子，适合入门</p>
+    </div>
+    <div class="diff-card" onclick="App.startFreePlay('hard')">
+      <div class="d-icon">⚔️</div>
+      <h3>困难</h3>
+      <p>有策略，挑战自我</p>
+    </div>
+    <div class="diff-card" onclick="App.startFreePlay('hell')">
+      <div class="d-icon">🔥</div>
+      <h3>地狱</h3>
+      <p>强力AI，高手才来</p>
+    </div>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="screen">
+  <button class="btn btn-secondary btn-small" style="position:absolute;top:10px;left:10px;z-index:10" onclick="App.confirmBack()">← 返回</button>
+
+  <!-- Player card (Black) -->
+  <div class="player-card" id="playerCardBlack">
+    <div class="player-avatar">🧒</div>
+    <div class="player-name">玩家</div>
+    <div class="player-stone-indicator stone-black"></div>
+    <div class="capture-count">吃子<span id="blackCaptures">0</span></div>
+    <div class="turn-label" id="blackTurnLabel">你的回合</div>
+  </div>
+
+  <!-- Board area -->
+  <div class="board-area">
+    <div class="info-bar">
+      <span class="level-badge" id="gameLevelBadge">自由对弈</span>
+      <span id="diffBadge" style="background:linear-gradient(135deg,#ff6b35,#ffa500);color:#fff;padding:4px 12px;border-radius:50px;font-size:12px">简单</span>
+      <span class="consecutive-passes" id="passInfo"></span>
+    </div>
+    <canvas id="boardCanvas"></canvas>
+    <div class="game-controls">
+      <button class="btn btn-secondary btn-small" onclick="App.passTurn()">⏭ 跳过</button>
+      <button class="btn btn-danger btn-small" onclick="App.resign()">🏳 认输</button>
+    </div>
+    <div class="score-bar">
+      <span>黑: <span class="score-val" id="liveBlackScore">0</span></span>
+      <span>白: <span class="score-val" id="liveWhiteScore">0</span></span>
+      <span style="font-size:11px;opacity:0.6">(贴目6.5)</span>
+    </div>
+  </div>
+
+  <!-- Status panel: top-right corner -->
+  <div class="status-panel">
+    <div class="status-panel-title">棋局概况</div>
+    <div class="status-grid">
+      <div class="status-item">
+        <div class="status-label">总手数</div>
+        <div class="status-value" id="statMoves">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">黑棋子</div>
+        <div class="status-value" id="statBlackStones">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">白棋子</div>
+        <div class="status-value" id="statWhiteStones">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">黑地域</div>
+        <div class="status-value" id="statBlackTerr">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">白地域</div>
+        <div class="status-value" id="statWhiteTerr">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">棋盘占用</div>
+        <div class="status-value" id="statFill">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI card (White) -->
+  <div class="player-card" id="playerCardWhite">
+    <div class="player-avatar">🤖</div>
+    <div class="player-name">AI</div>
+    <div class="player-stone-indicator stone-white"></div>
+    <div class="capture-count">吃子<span id="whiteCaptures">0</span></div>
+    <div class="turn-label" id="whiteTurnLabel" style="color:rgba(100,200,255,0.8);display:none">AI回合</div>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="resultScreen" class="screen">
+  <div class="result-container">
+    <div class="result-emoji" id="resultEmoji">🏆</div>
+    <div class="result-title" id="resultTitle">你赢了！</div>
+    <div class="result-score" id="resultScore">
+      <div>黑棋(玩家): <strong id="finalBlack">0</strong> 分</div>
+      <div>白棋(AI): <strong id="finalWhite">0</strong> 分</div>
+      <div style="margin-top:8px;font-size:18px">结果: <strong id="finalResult">黑棋胜</strong></div>
+    </div>
+    <div class="title-upgrade" id="titleUpgrade">
+      <h3>🎉 称号升级！</h3>
+      <p id="newTitleText">棋坛新星 ⭐</p>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" onclick="App.playAgain()">🔄 再玩一局</button>
+      <button class="btn btn-secondary" onclick="App.showModeSelect()">🏠 返回主菜单</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY SCREEN -->
+<div id="historyScreen" class="screen">
+  <div class="history-header">
+    <button class="btn btn-secondary btn-small" onclick="App.showMainMenu()" style="margin-bottom:10px">← 返回</button>
+    <h2>📋 历史记录</h2>
+    <div class="history-user-sub" id="historyUserLabel"></div>
+  </div>
+  <div class="history-list" id="historyList"></div>
+</div>
+
+<!-- INACTIVITY POPUP -->
+<div id="inactivityPopup">🐼 该你了！快落子吧～</div>
+
+<!-- AI THINKING -->
+<div class="ai-thinking" id="aiThinking"><span>🤖 AI正在思考</span> ...</div>
+
+<script>
+'use strict';
+
+// ============================================================
+// AUDIO MANAGER
+// ============================================================
+class AudioManager {
+  constructor() {
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.enabled = true;
+    } catch(e) {
+      this.enabled = false;
+    }
+  }
+  resume() {
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  }
+  _osc(type, freq, gainVal, startTime, duration, freqEnd) {
+    if (!this.enabled) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    if (freqEnd !== undefined) osc.frequency.exponentialRampToValueAtTime(freqEnd, startTime + duration);
+    gain.gain.setValueAtTime(gainVal, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.start(startTime); osc.stop(startTime + duration + 0.01);
+  }
+  playBlackStone() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    this._osc('triangle', 200, 0.4, t, 0.2, 100);
+    this._osc('sine', 150, 0.2, t, 0.15, 80);
+  }
+  playWhiteStone() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    this._osc('sine', 400, 0.3, t, 0.15, 200);
+    this._osc('sine', 600, 0.1, t, 0.1, 300);
+  }
+  playCapture(count) {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    for (let i = 0; i < Math.min(count, 5); i++) {
+      const delay = i * 0.12;
+      this._osc('sawtooth', 300, 0.25, t + delay, 0.12, 80);
+    }
+  }
+  playReminder() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    const notes = [523, 659, 784];
+    notes.forEach((f, i) => {
+      this._osc('sine', f, 0.2, t + i * 0.3, 0.3);
+    });
+  }
+  playVictory() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => {
+      this._osc('sine', f, 0.3, t + i * 0.2, 0.3);
+    });
+    setTimeout(() => {
+      const t2 = this.ctx.currentTime;
+      [784, 1047, 1175, 1319].forEach((f, i) => {
+        this._osc('sine', f, 0.25, t2 + i * 0.15, 0.25);
+      });
+    }, 1000);
+  }
+  playLevelUp() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    const melody = [523, 587, 659, 698, 784, 880, 988, 1047];
+    melody.forEach((f, i) => {
+      this._osc('sine', f, 0.3, t + i * 0.1, 0.15);
+      this._osc('triangle', f * 1.5, 0.1, t + i * 0.1, 0.15);
+    });
+  }
+  playDefeat() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    [523, 466, 415, 392].forEach((f, i) => {
+      this._osc('sine', f, 0.2, t + i * 0.25, 0.3);
+    });
+  }
+  playClick() {
+    this.resume();
+    if (!this.enabled) return;
+    const t = this.ctx.currentTime;
+    this._osc('sine', 800, 0.1, t, 0.05);
+  }
+}
+
+// ============================================================
+// GO GAME LOGIC
+// ============================================================
+class GoGame {
+  constructor(size) {
+    this.size = size;
+    this.board = Array.from({length: size}, () => new Array(size).fill(0));
+    this.currentPlayer = 1; // 1=black, 2=white
+    this.captures = {1: 0, 2: 0};
+    this.previousBoardStr = null; // for Ko
+    this.lastBoardStr = null;
+    this.consecutivePasses = 0;
+    this.gameOver = false;
+    this.lastMove = null;
+    this.moveHistory = [];
+  }
+
+  boardStr() {
+    return this.board.map(r => r.join('')).join('|');
+  }
+
+  clone() {
+    const g = new GoGame(this.size);
+    g.board = this.board.map(r => [...r]);
+    g.currentPlayer = this.currentPlayer;
+    g.captures = {...this.captures};
+    g.previousBoardStr = this.previousBoardStr;
+    g.lastBoardStr = this.lastBoardStr;
+    g.consecutivePasses = this.consecutivePasses;
+    g.gameOver = this.gameOver;
+    g.lastMove = this.lastMove;
+    return g;
+  }
+
+  neighbors(r, c) {
+    const n = [];
+    if (r > 0) n.push([r-1, c]);
+    if (r < this.size-1) n.push([r+1, c]);
+    if (c > 0) n.push([r, c-1]);
+    if (c < this.size-1) n.push([r, c+1]);
+    return n;
+  }
+
+  getGroup(r, c) {
+    const color = this.board[r][c];
+    if (!color) return { stones: [], liberties: new Set() };
+    const visited = new Set();
+    const stones = [];
+    const liberties = new Set();
+    const stack = [[r, c]];
+    while (stack.length) {
+      const [cr, cc] = stack.pop();
+      const key = cr * this.size + cc;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      stones.push([cr, cc]);
+      for (const [nr, nc] of this.neighbors(cr, cc)) {
+        const nkey = nr * this.size + nc;
+        if (this.board[nr][nc] === 0) liberties.add(nkey);
+        else if (this.board[nr][nc] === color && !visited.has(nkey)) stack.push([nr, nc]);
+      }
+    }
+    return { stones, liberties };
+  }
+
+  // Returns number of stones captured, or -1 if illegal
+  tryMove(r, c, player) {
+    if (this.board[r][c] !== 0) return -1;
+    if (this.gameOver) return -1;
+
+    const tempBoard = this.board.map(row => [...row]);
+    tempBoard[r][c] = player;
+    const opp = 3 - player;
+
+    // Capture opponent groups with no liberties
+    let captured = [];
+    for (const [nr, nc] of this.neighbors(r, c)) {
+      if (tempBoard[nr][nc] === opp) {
+        // Check group liberties
+        const { stones, liberties } = this._getGroupOnBoard(tempBoard, nr, nc);
+        if (liberties.size === 0) {
+          for (const [sr, sc] of stones) {
+            tempBoard[sr][sc] = 0;
+            captured.push([sr, sc]);
+          }
+        }
+      }
+    }
+
+    // Remove duplicates from captured
+    const capturedSet = new Set(captured.map(([r,c]) => r*this.size+c));
+    captured = [...capturedSet].map(k => [Math.floor(k/this.size), k%this.size]);
+
+    // Check if placed stone has liberties (after capture)
+    const { liberties: ownLibs } = this._getGroupOnBoard(tempBoard, r, c);
+    if (ownLibs.size === 0) return -1; // suicide
+
+    // Ko check: resulting board cannot equal previousBoardStr
+    const newBoardStr = tempBoard.map(row => row.join('')).join('|');
+    if (newBoardStr === this.previousBoardStr) return -1; // Ko
+
+    return captured.length;
+  }
+
+  _getGroupOnBoard(board, r, c) {
+    const color = board[r][c];
+    if (!color) return { stones: [], liberties: new Set() };
+    const visited = new Set();
+    const stones = [];
+    const liberties = new Set();
+    const stack = [[r, c]];
+    const size = board.length;
+    while (stack.length) {
+      const [cr, cc] = stack.pop();
+      const key = cr * size + cc;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      stones.push([cr, cc]);
+      const nbrs = [];
+      if (cr > 0) nbrs.push([cr-1, cc]);
+      if (cr < size-1) nbrs.push([cr+1, cc]);
+      if (cc > 0) nbrs.push([cr, cc-1]);
+      if (cc < size-1) nbrs.push([cr, cc+1]);
+      for (const [nr, nc] of nbrs) {
+        const nkey = nr * size + nc;
+        if (board[nr][nc] === 0) liberties.add(nkey);
+        else if (board[nr][nc] === color && !visited.has(nkey)) stack.push([nr, nc]);
+      }
+    }
+    return { stones, liberties };
+  }
+
+  makeMove(r, c) {
+    const player = this.currentPlayer;
+    const opp = 3 - player;
+    if (this.board[r][c] !== 0) return false;
+    if (this.gameOver) return false;
+
+    // Save board state for Ko
+    const beforeBoardStr = this.boardStr();
+
+    this.board[r][c] = player;
+
+    // Capture
+    let totalCaptured = 0;
+    const capturedStones = [];
+    for (const [nr, nc] of this.neighbors(r, c)) {
+      if (this.board[nr][nc] === opp) {
+        const { stones, liberties } = this.getGroup(nr, nc);
+        if (liberties.size === 0) {
+          for (const [sr, sc] of stones) {
+            this.board[sr][sc] = 0;
+            capturedStones.push([sr, sc]);
+          }
+          totalCaptured += stones.length;
+        }
+      }
+    }
+
+    // Check suicide
+    const { liberties: ownLibs } = this.getGroup(r, c);
+    if (ownLibs.size === 0) {
+      // Undo
+      this.board[r][c] = 0;
+      for (const [sr, sc] of capturedStones) this.board[sr][sc] = opp;
+      return false;
+    }
+
+    // Ko check
+    const newBoardStr = this.boardStr();
+    if (newBoardStr === this.previousBoardStr) {
+      // Undo
+      this.board[r][c] = 0;
+      for (const [sr, sc] of capturedStones) this.board[sr][sc] = opp;
+      return false;
+    }
+
+    this.captures[player] += totalCaptured;
+    this.previousBoardStr = beforeBoardStr;
+    this.lastBoardStr = newBoardStr;
+    this.consecutivePasses = 0;
+    this.lastMove = {r, c, player, captured: totalCaptured, capturedStones};
+    this.moveHistory.push({r, c, player, capturedStones});
+    this.currentPlayer = opp;
+    return true;
+  }
+
+  pass() {
+    if (this.gameOver) return false;
+    this.consecutivePasses++;
+    const opp = 3 - this.currentPlayer;
+    this.lastMove = {r: -1, c: -1, player: this.currentPlayer, captured: 0, capturedStones: []};
+    this.moveHistory.push({r: -1, c: -1, player: this.currentPlayer, capturedStones: []});
+    this.currentPlayer = opp;
+    if (this.consecutivePasses >= 2) {
+      this.gameOver = true;
+    }
+    return true;
+  }
+
+  // Territory counting (Chinese rules)
+  // Returns {black: pts, white: pts, blackTerritory: cells, whiteTerritory: cells}
+  countTerritory() {
+    const size = this.size;
+    const visited = new Set();
+    let blackTerr = 0, whiteTerr = 0;
+    const blackTerrCells = [], whiteTerrCells = [];
+
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (this.board[r][c] !== 0 || visited.has(r*size+c)) continue;
+        // Flood fill empty region
+        const region = [];
+        const stack = [[r, c]];
+        let touchBlack = false, touchWhite = false;
+        while (stack.length) {
+          const [cr, cc] = stack.pop();
+          const key = cr*size+cc;
+          if (visited.has(key)) continue;
+          visited.add(key);
+          region.push([cr, cc]);
+          for (const [nr, nc] of this.neighbors(cr, cc)) {
+            const v = this.board[nr][nc];
+            if (v === 1) touchBlack = true;
+            else if (v === 2) touchWhite = true;
+            else if (!visited.has(nr*size+nc)) stack.push([nr, nc]);
+          }
+        }
+        if (touchBlack && !touchWhite) {
+          blackTerr += region.length;
+          blackTerrCells.push(...region);
+        } else if (touchWhite && !touchBlack) {
+          whiteTerr += region.length;
+          whiteTerrCells.push(...region);
+        }
+      }
+    }
+
+    // Count stones on board
+    let blackStones = 0, whiteStones = 0;
+    for (let r = 0; r < size; r++)
+      for (let c = 0; c < size; c++) {
+        if (this.board[r][c] === 1) blackStones++;
+        else if (this.board[r][c] === 2) whiteStones++;
+      }
+
+    // Chinese rules: territory + stones on board - captured opponent stones captured BY opponent
+    // Actually Chinese rules: area scoring = stones on board + territory
+    const blackScore = blackStones + blackTerr;
+    const whiteScore = whiteStones + whiteTerr + 6.5; // komi
+
+    return {
+      blackScore, whiteScore,
+      blackStones, whiteStones,
+      blackTerr, whiteTerr,
+      blackTerrCells, whiteTerrCells
+    };
+  }
+
+  getLegalMoves() {
+    const moves = [];
+    const opp = 3 - this.currentPlayer;
+    for (let r = 0; r < this.size; r++)
+      for (let c = 0; c < this.size; c++)
+        if (this.board[r][c] === 0 && this.tryMove(r, c, this.currentPlayer) >= 0)
+          moves.push([r, c]);
+    return moves;
+  }
+}
+
+// ============================================================
+// GO AI
+// ============================================================
+class GoAI {
+  constructor(difficulty) {
+    this.difficulty = difficulty; // 'easy', 'hard', 'hell'
+  }
+
+  getBestMove(game) {
+    const legalMoves = game.getLegalMoves();
+    if (legalMoves.length === 0) return null;
+
+    const player = game.currentPlayer; // 2 = white (AI)
+    const opp = 3 - player;
+    const d = this.difficulty;
+
+    // Baseline territory value before any move
+    const baseTerr = game.countTerritory();
+    const baseVal = player === 2
+      ? baseTerr.whiteScore - baseTerr.blackScore
+      : baseTerr.blackScore - baseTerr.whiteScore;
+
+    // Step 1: Quick tactical scoring without board simulation
+    const quickScored = legalMoves
+      .map(([r, c]) => ({ r, c, q: this._quickScore(game, r, c, player, opp) }))
+      .sort((a, b) => b.q - a.q);
+
+    // Step 2: Deep territory evaluation on top N candidates
+    const N = d === 'easy' ? 10 : d === 'hard' ? 14 : 20;
+    const topN = quickScored.slice(0, Math.min(N, quickScored.length));
+    const tWeight = d === 'easy' ? 18 : d === 'hard' ? 40 : 58;
+
+    const deepScored = topN.map(({ r, c, q }) => {
+      const sim = game.clone();
+      if (!sim.makeMove(r, c)) return { r, c, score: -Infinity };
+      const t = sim.countTerritory();
+      const posVal = player === 2 ? t.whiteScore - t.blackScore : t.blackScore - t.whiteScore;
+      return { r, c, score: q + (posVal - baseVal) * tWeight };
+    }).sort((a, b) => b.score - a.score);
+
+    if (d === 'easy') {
+      // Beginner: understands tactics but makes strategic errors — large noise
+      deepScored.forEach(m => m.score += Math.random() * 110 - 20);
+      deepScored.sort((a, b) => b.score - a.score);
+      return [deepScored[0].r, deepScored[0].c];
+    }
+
+    if (d === 'hard') {
+      // Club player: plays well, occasional suboptimal choice — small noise
+      deepScored.forEach(m => m.score += Math.random() * 22);
+      deepScored.sort((a, b) => b.score - a.score);
+      return [deepScored[0].r, deepScored[0].c];
+    }
+
+    // hell: 2-ply minimax on 9x9/13x13; deep 1-ply on 19x19 (too many moves)
+    if (game.size >= 19) {
+      return [deepScored[0].r, deepScored[0].c];
+    }
+
+    // 2-ply: for each of top 6 moves, simulate opponent's best response
+    const top6 = deepScored.slice(0, Math.min(6, deepScored.length));
+    let bestScore = -Infinity;
+    let bestMove = [top6[0].r, top6[0].c];
+
+    for (const { r, c } of top6) {
+      const sim = game.clone();
+      if (!sim.makeMove(r, c)) continue;
+
+      const oppLegal = sim.getLegalMoves();
+      const oppTop = oppLegal
+        .map(([or, oc]) => ({ r: or, c: oc, q: this._quickScore(sim, or, oc, opp, player) }))
+        .sort((a, b) => b.q - a.q)
+        .slice(0, 8);
+
+      let minValForUs = Infinity;
+      for (const { r: or, c: oc } of oppTop) {
+        const sim2 = sim.clone();
+        if (!sim2.makeMove(or, oc)) continue;
+        const t = sim2.countTerritory();
+        const v = player === 2 ? t.whiteScore - t.blackScore : t.blackScore - t.whiteScore;
+        if (v < minValForUs) minValForUs = v;
+      }
+      if (minValForUs === Infinity) {
+        const t = sim.countTerritory();
+        minValForUs = player === 2 ? t.whiteScore - t.blackScore : t.blackScore - t.whiteScore;
+      }
+
+      if (minValForUs > bestScore) {
+        bestScore = minValForUs;
+        bestMove = [r, c];
+      }
+    }
+
+    return bestMove;
+  }
+
+  // Tactical quick-score without simulation — O(neighbors * group_size) per move
+  _quickScore(game, r, c, player, opp) {
+    let score = 0;
+    const size = game.size;
+    const nbrs = game.neighbors(r, c);
+
+    // Priority 1: Capture opponent groups in atari adjacent to this move
+    for (const [nr, nc] of nbrs) {
+      if (game.board[nr][nc] === opp) {
+        const { stones, liberties } = game.getGroup(nr, nc);
+        if (liberties.size === 1 && liberties.has(r * size + c)) {
+          score += 900 + stones.length * 25; // bigger captures = more valuable
+        } else if (liberties.size === 2) {
+          score += 70; // near-capture setup
+        }
+      }
+    }
+
+    // Priority 2: Rescue own groups in atari (deduplicate groups)
+    const seenGroups = new Set();
+    for (const [nr, nc] of nbrs) {
+      if (game.board[nr][nc] === player) {
+        const grp = game.getGroup(nr, nc);
+        const gkey = grp.stones[0][0] * size + grp.stones[0][1];
+        if (!seenGroups.has(gkey)) {
+          seenGroups.add(gkey);
+          if (grp.liberties.size === 1) score += 750;  // critical: own group dying
+          else if (grp.liberties.size === 2) score += 45;
+        }
+      }
+    }
+
+    // Priority 3: Never fill own eye (completely surrounded by own stones)
+    const ownCount = nbrs.filter(([nr, nc]) => game.board[nr][nc] === player).length;
+    if (ownCount === nbrs.length && nbrs.length >= 3) score -= 800;
+
+    // Diagonal connections (kosumi) — efficient shape in Go
+    for (const [dr, dc] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < size && nc >= 0 && nc < size && game.board[nr][nc] === player) {
+        score += 14;
+      }
+    }
+
+    // Opening strategy: star points and approach moves
+    const fillRatio = this._fillRatio(game);
+    if (fillRatio < 0.12) {
+      if (this._getStarPoints(size).some(([sr, sc]) => sr === r && sc === c)) score += 450;
+      const edgeDist = Math.min(r, size - 1 - r, c, size - 1 - c);
+      if (edgeDist === 3) score += 130;
+      else if (edgeDist === 2) score += 90;
+      else if (edgeDist <= 1) score -= 60;
+    }
+
+    // Mid/late-game: prefer playing near the boundary of opponent stones
+    if (fillRatio >= 0.08) {
+      if (nbrs.some(([nr, nc]) => game.board[nr][nc] === opp)) score += 28;
+    }
+
+    // Penalise over-concentration (3+ own neighbours wastes potential)
+    if (ownCount >= 3) score -= 32;
+
+    return score;
+  }
+
+  _fillRatio(game) {
+    let filled = 0;
+    const n = game.size;
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++)
+        if (game.board[r][c] !== 0) filled++;
+    return filled / (n * n);
+  }
+
+  _getStarPoints(size) {
+    if (size === 9)  return [[2,2],[2,6],[6,2],[6,6],[4,4]];
+    if (size === 13) return [[3,3],[3,9],[9,3],[9,9],[6,6]];
+    return [[3,3],[3,9],[3,15],[9,3],[9,9],[9,15],[15,3],[15,9],[15,15]];
+  }
+
+  shouldPass(game) {
+    const legal = game.getLegalMoves();
+    if (legal.length === 0) return true;
+
+    const player = game.currentPlayer;
+    const size = game.size;
+
+    // Never pass if a capture is available
+    for (const [r, c] of legal) {
+      if (game.tryMove(r, c, player) > 0) return false;
+    }
+
+    // Never pass if any own group is in atari
+    const seenGroups = new Set();
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (game.board[r][c] !== player) continue;
+        const grp = game.getGroup(r, c);
+        const gkey = grp.stones[0][0] * size + grp.stones[0][1];
+        if (!seenGroups.has(gkey)) {
+          seenGroups.add(gkey);
+          if (grp.liberties.size === 1) return false;
+        }
+      }
+    }
+
+    if (this._fillRatio(game) < 0.65) return false;
+
+    // Pass only when territory is essentially settled
+    const terr = game.countTerritory();
+    const contested = size * size - terr.blackStones - terr.whiteStones
+      - terr.blackTerr - terr.whiteTerr;
+    return contested <= (this.difficulty === 'hell' ? 4 : 2);
+  }
+}
+
+// ============================================================
+// GAME RENDERER
+// ============================================================
+class GameRenderer {
+  constructor(canvas, game) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.game = game;
+    this.hoverCell = null;
+    this.stoneAnimations = []; // [{r,c,player,progress}]
+    this.terrData = null;
+    this.animFrame = null;
+    this._computeLayout();
+  }
+
+  _computeLayout() {
+    const size = this.game.size;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    // Available space (account for sidebars ~280px and controls ~120px)
+    const availW = Math.min(vw - 300, vh - 140);
+    const maxBoard = Math.min(availW, 680);
+    this.padding = Math.max(28, Math.floor(maxBoard * 0.05));
+    this.cellSize = Math.floor((maxBoard - this.padding * 2) / (size - 1));
+    this.boardPx = this.cellSize * (size - 1) + this.padding * 2;
+    this.canvas.width = this.boardPx;
+    this.canvas.height = this.boardPx;
+    this.stoneR = Math.max(8, this.cellSize * 0.47);
+  }
+
+  cellToXY(r, c) {
+    return {
+      x: this.padding + c * this.cellSize,
+      y: this.padding + r * this.cellSize
+    };
+  }
+
+  xyToCell(x, y) {
+    const c = Math.round((x - this.padding) / this.cellSize);
+    const r = Math.round((y - this.padding) / this.cellSize);
+    const size = this.game.size;
+    if (r < 0 || r >= size || c < 0 || c >= size) return null;
+    // Snap radius
+    const {x: bx, y: by} = this.cellToXY(r, c);
+    const dist = Math.sqrt((x-bx)**2 + (y-by)**2);
+    if (dist > this.cellSize * 0.55) return null;
+    return {r, c};
+  }
+
+  drawBoard() {
+    const ctx = this.ctx;
+    const size = this.game.size;
+    const bp = this.boardPx;
+
+    // Wooden background
+    const grad = ctx.createLinearGradient(0, 0, bp, bp);
+    grad.addColorStop(0, '#d4a94c');
+    grad.addColorStop(0.4, '#c9993e');
+    grad.addColorStop(1, '#a07020');
+    ctx.fillStyle = grad;
+    ctx.roundRect(0, 0, bp, bp, 12);
+    ctx.fill();
+
+    // Subtle wood grain
+    ctx.strokeStyle = 'rgba(160,112,32,0.15)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < bp; i += 8) {
+      ctx.beginPath();
+      ctx.moveTo(0, i); ctx.lineTo(bp, i + 5);
+      ctx.stroke();
+    }
+
+    // Grid lines
+    ctx.strokeStyle = '#3a2800';
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < size; i++) {
+      const {x, y} = this.cellToXY(i, 0);
+      ctx.beginPath();
+      ctx.moveTo(x, this.padding);
+      ctx.lineTo(x, this.padding + (size-1)*this.cellSize);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(this.padding, y);
+      ctx.lineTo(this.padding + (size-1)*this.cellSize, y);
+      ctx.stroke();
+    }
+
+    // Star points (hoshi)
+    const stars = this._getStarPoints(size);
+    ctx.fillStyle = '#3a2800';
+    for (const [r, c] of stars) {
+      const {x, y} = this.cellToXY(r, c);
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(3, this.cellSize * 0.1), 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Territory overlay
+    if (this.terrData) {
+      ctx.globalAlpha = 0.3;
+      for (const [tr, tc] of this.terrData.blackTerrCells) {
+        const {x, y} = this.cellToXY(tr, tc);
+        ctx.fillStyle = '#222';
+        ctx.fillRect(x - this.cellSize*0.3, y - this.cellSize*0.3, this.cellSize*0.6, this.cellSize*0.6);
+      }
+      for (const [tr, tc] of this.terrData.whiteTerrCells) {
+        const {x, y} = this.cellToXY(tr, tc);
+        ctx.fillStyle = '#eee';
+        ctx.fillRect(x - this.cellSize*0.3, y - this.cellSize*0.3, this.cellSize*0.6, this.cellSize*0.6);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Hover preview
+    if (this.hoverCell && this.game.board[this.hoverCell.r][this.hoverCell.c] === 0) {
+      const {r, c} = this.hoverCell;
+      if (this.game.tryMove(r, c, this.game.currentPlayer) >= 0) {
+        const {x, y} = this.cellToXY(r, c);
+        ctx.globalAlpha = 0.4;
+        this._drawStone(ctx, x, y, this.game.currentPlayer);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // Stones
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (this.game.board[r][c] !== 0) {
+          const {x, y} = this.cellToXY(r, c);
+          // Check if animating
+          const anim = this.stoneAnimations.find(a => a.r === r && a.c === c);
+          if (anim) {
+            const scale = 0.5 + 0.5 * anim.progress;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            this._drawStone(ctx, 0, 0, this.game.board[r][c]);
+            ctx.restore();
+          } else {
+            this._drawStone(ctx, x, y, this.game.board[r][c]);
+          }
+        }
+      }
+    }
+
+    // Last move indicator
+    if (this.game.lastMove && this.game.lastMove.r >= 0) {
+      const {r, c, player} = this.game.lastMove;
+      const {x, y} = this.cellToXY(r, c);
+      ctx.fillStyle = player === 1 ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)';
+      ctx.beginPath();
+      ctx.arc(x, y, this.stoneR * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Coord labels (small)
+    if (this.cellSize >= 25) {
+      ctx.fillStyle = 'rgba(60,40,0,0.6)';
+      ctx.font = `${Math.max(10, this.cellSize * 0.3)}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const letters = 'ABCDEFGHJKLMNOPQRST';
+      for (let c = 0; c < size; c++) {
+        const {x} = this.cellToXY(0, c);
+        ctx.fillText(letters[c], x, this.padding * 0.45);
+        ctx.fillText(letters[c], x, this.boardPx - this.padding * 0.45);
+      }
+      for (let r = 0; r < size; r++) {
+        const {y} = this.cellToXY(r, 0);
+        ctx.fillText(size - r, this.padding * 0.4, y);
+        ctx.fillText(size - r, this.boardPx - this.padding * 0.4, y);
+      }
+    }
+  }
+
+  _drawStone(ctx, x, y, player) {
+    const R = this.stoneR;
+    if (player === 1) {
+      // Black stone
+      const g = ctx.createRadialGradient(x - R*0.3, y - R*0.3, R*0.05, x, y, R);
+      g.addColorStop(0, '#666');
+      g.addColorStop(0.3, '#222');
+      g.addColorStop(1, '#000');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, R, 0, Math.PI * 2);
+      ctx.fill();
+      // Highlight
+      const h = ctx.createRadialGradient(x - R*0.35, y - R*0.35, R*0.02, x - R*0.2, y - R*0.2, R*0.5);
+      h.addColorStop(0, 'rgba(255,255,255,0.5)');
+      h.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = h;
+      ctx.beginPath();
+      ctx.arc(x, y, R, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // White stone
+      const g = ctx.createRadialGradient(x - R*0.3, y - R*0.3, R*0.05, x, y, R);
+      g.addColorStop(0, '#fff');
+      g.addColorStop(0.5, '#e0e0e0');
+      g.addColorStop(1, '#bbb');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#999';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+      // Highlight
+      const h = ctx.createRadialGradient(x - R*0.35, y - R*0.35, R*0.02, x - R*0.2, y - R*0.2, R*0.4);
+      h.addColorStop(0, 'rgba(255,255,255,0.9)');
+      h.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = h;
+      ctx.beginPath();
+      ctx.arc(x, y, R, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  _getStarPoints(size) {
+    if (size === 9) return [[2,2],[2,6],[6,2],[6,6],[4,4]];
+    if (size === 13) return [[3,3],[3,9],[9,3],[9,9],[6,6]];
+    return [[3,3],[3,9],[3,15],[9,3],[9,9],[9,15],[15,3],[15,9],[15,15]];
+  }
+
+  addStoneAnimation(r, c, player) {
+    this.stoneAnimations.push({r, c, player, progress: 0});
+  }
+
+  update(dt) {
+    for (const anim of this.stoneAnimations) {
+      anim.progress = Math.min(1, anim.progress + dt * 8);
+    }
+    this.stoneAnimations = this.stoneAnimations.filter(a => a.progress < 1);
+  }
+
+  render() {
+    this.drawBoard();
+  }
+
+  startLoop() {
+    let last = performance.now();
+    const loop = (now) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      this.update(dt);
+      this.render();
+      this.animFrame = requestAnimationFrame(loop);
+    };
+    this.animFrame = requestAnimationFrame(loop);
+  }
+
+  stopLoop() {
+    if (this.animFrame) cancelAnimationFrame(this.animFrame);
+  }
+}
+
+// ============================================================
+// LEVEL SYSTEM
+// ============================================================
+class LevelSystem {
+  constructor() {
+    this.titles = [
+      {level: 0, name: '围棋小白', emoji: '🐣'},
+      {level: 3, name: '棋盘探险家', emoji: '🗺️'},
+      {level: 6, name: '围棋学徒', emoji: '🎓'},
+      {level: 10, name: '棋坛新星', emoji: '⭐'},
+      {level: 15, name: '围棋少侠', emoji: '🗡️'},
+      {level: 20, name: '棋艺精进', emoji: '🏅'},
+      {level: 25, name: '围棋高手', emoji: '🏆'},
+      {level: 30, name: '棋圣传人', emoji: '👑'},
+    ];
+
+    this.levels = this._generateLevels();
+  }
+
+  _generateLevels() {
+    const levels = [];
+    for (let i = 1; i <= 30; i++) {
+      let size, difficulty, desc;
+      if (i <= 10) {
+        size = 9;
+        difficulty = i <= 5 ? 'easy' : 'hard';
+        desc = i <= 5 ? '简单' : '困难';
+      } else if (i <= 20) {
+        size = i <= 15 ? 9 : 13;
+        difficulty = 'hard';
+        desc = '困难';
+      } else {
+        size = i <= 25 ? 13 : 19;
+        difficulty = 'hell';
+        desc = '地狱';
+      }
+      levels.push({id: i, size, difficulty, desc,
+        icon: i <= 10 ? '🌱' : i <= 20 ? '🌿' : '🌳'});
+    }
+    return levels;
+  }
+
+  getTitleForLevel(completedLevels) {
+    let title = this.titles[0];
+    for (const t of this.titles) {
+      if (completedLevels >= t.level) title = t;
+    }
+    return title;
+  }
+
+  getNextTitle(completedLevels) {
+    for (const t of this.titles) {
+      if (t.level > completedLevels) return t;
+    }
+    return null;
+  }
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function spawnConfetti(count = 60) {
+  const colors = ['#ff6b35','#ffd700','#4ecdc4','#ff4757','#a29bfe','#2ed573','#f093fb'];
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top = '-20px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width = (6 + Math.random() * 10) + 'px';
+    el.style.height = (6 + Math.random() * 10) + 'px';
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    el.style.animationDuration = (2 + Math.random() * 3) + 's';
+    el.style.animationDelay = Math.random() * 1 + 's';
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+
+// ============================================================
+// APP CONTROLLER
+// ============================================================
+const App = (() => {
+  const audio = new AudioManager();
+  const levelSystem = new LevelSystem();
+
+  let game = null;
+  let ai = null;
+  let renderer = null;
+  let isCampaign = false;
+  let currentLevelId = null;
+  let selectedBoardSize = 9;
+  let selectedDifficulty = 'easy';
+  let currentDifficulty = 'easy';
+  let inactivityTimer = null;
+  let reminderShown = false;
+  let aiThinkTimeout = null;
+  let isAiThinking = false;
+  let currentUser = localStorage.getItem('goGameCurrentUser') || null;
+  let progress = {completedLevels: [], maxCompleted: 0, gameHistory: []};
+
+  function loadProgress() {
+    try {
+      if (!currentUser) return {completedLevels: [], maxCompleted: 0, gameHistory: []};
+      const p = JSON.parse(localStorage.getItem('goUser_' + currentUser) || '{}');
+      return {
+        completedLevels: p.completedLevels || [],
+        maxCompleted: p.maxCompleted || 0,
+        gameHistory: p.gameHistory || []
+      };
+    } catch { return {completedLevels: [], maxCompleted: 0, gameHistory: []}; }
+  }
+
+  function saveProgress() {
+    if (!currentUser) return;
+    localStorage.setItem('goUser_' + currentUser, JSON.stringify(progress));
+  }
+
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem('goGameUsers') || '[]'); } catch { return []; }
+  }
+
+  function saveUsers(list) { localStorage.setItem('goGameUsers', JSON.stringify(list)); }
+
+  function showLoginScreen() {
+    audio.playClick();
+    const users = getUsers();
+    const listEl = document.getElementById('userList');
+    listEl.innerHTML = '';
+    const icons = ['🧒','👧','🧑','👦','🧓','🧕','👩','👨','🦸','🧙'];
+    if (users.length === 0) {
+      listEl.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:14px">还没有用户，创建一个吧！</div>';
+    } else {
+      users.forEach((name, i) => {
+        const card = document.createElement('div');
+        card.className = 'user-avatar-card';
+        card.innerHTML = `<div class="u-icon">${icons[i % icons.length]}</div><div class="u-name">${name}</div>`;
+        card.onclick = () => loginAs(name);
+        listEl.appendChild(card);
+      });
+    }
+    document.getElementById('newUserInput').value = '';
+    showScreen('loginScreen');
+  }
+
+  function loginAs(username) {
+    currentUser = username;
+    localStorage.setItem('goGameCurrentUser', username);
+    progress = loadProgress();
+    updateUserBadge();
+    audio.playClick();
+    showScreen('mainMenu');
+  }
+
+  function createUser() {
+    const input = document.getElementById('newUserInput');
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+    if (name.length > 10) { alert('用户名最多10个字！'); return; }
+    const users = getUsers();
+    if (!users.includes(name)) { users.push(name); saveUsers(users); }
+    loginAs(name);
+  }
+
+  function updateUserBadge() {
+    const btn = document.getElementById('userBadgeBtn');
+    if (btn) btn.textContent = currentUser ? ('👤 ' + currentUser) : '👤 切换用户';
+  }
+
+  function saveGameRecord(result, terr) {
+    if (!currentUser) return;
+    const record = {
+      date: new Date().toISOString(),
+      mode: isCampaign ? 'campaign' : 'free',
+      levelId: currentLevelId,
+      boardSize: game.size,
+      difficulty: currentDifficulty,
+      result,
+      blackScore: terr ? parseFloat(terr.blackScore.toFixed(1)) : 0,
+      whiteScore: terr ? parseFloat(terr.whiteScore.toFixed(1)) : 0,
+      moves: game.moveHistory.length
+    };
+    if (!progress.gameHistory) progress.gameHistory = [];
+    progress.gameHistory.unshift(record);
+    if (progress.gameHistory.length > 200) progress.gameHistory = progress.gameHistory.slice(0, 200);
+    saveProgress();
+  }
+
+  function showHistory() {
+    audio.playClick();
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '';
+    document.getElementById('historyUserLabel').textContent = '用户：' + (currentUser || '未登录');
+    const history = progress.gameHistory || [];
+    if (history.length === 0) {
+      listEl.innerHTML = '<div class="history-empty">暂无对局记录<br>快去下棋吧！🐼</div>';
+    } else {
+      const diffNames = {easy: '简单', hard: '困难', hell: '地狱'};
+      const resultInfo = {
+        win:    {emoji: '🏆', text: '胜利', cls: 'win'},
+        lose:   {emoji: '💪', text: '负局', cls: 'lose'},
+        resign: {emoji: '🏳️', text: '认输', cls: 'resign'}
+      };
+      history.forEach(r => {
+        const info = resultInfo[r.result] || resultInfo.lose;
+        const modeText = r.mode === 'campaign' ? ('第' + r.levelId + '关') : '自由对弈';
+        const d = new Date(r.date);
+        const dateStr = d.toLocaleDateString('zh-CN', {month:'numeric', day:'numeric'})
+          + ' ' + d.toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+        const item = document.createElement('div');
+        item.className = 'history-item ' + info.cls;
+        item.innerHTML =
+          '<div class="hi-icon">' + info.emoji + '</div>' +
+          '<div class="hi-info">' +
+            '<div class="hi-title">' + modeText + ' · ' + r.boardSize + '×' + r.boardSize + ' · ' + (diffNames[r.difficulty] || r.difficulty) + '</div>' +
+            '<div class="hi-detail">' + r.moves + ' 手 &nbsp;·&nbsp; 黑 ' + r.blackScore + ' vs 白 ' + r.whiteScore + '</div>' +
+          '</div>' +
+          '<div class="hi-right">' +
+            '<div class="hi-result ' + info.cls + '">' + info.text + '</div>' +
+            '<div class="hi-date">' + dateStr + '</div>' +
+          '</div>';
+        listEl.appendChild(item);
+      });
+    }
+    showScreen('historyScreen');
+  }
+
+  function isLevelCompleted(id) { return progress.completedLevels.includes(id); }
+  function isLevelUnlocked(id) { return id === 1 || progress.maxCompleted >= id - 1; }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function showMainMenu() { showScreen('mainMenu'); updateUserBadge(); audio.playClick(); }
+  function showModeSelect() { showScreen('modeSelect'); audio.playClick(); }
+
+  function showCampaign() {
+    audio.playClick();
+    const grid = document.getElementById('levelGrid');
+    grid.innerHTML = '';
+    const completedCount = progress.completedLevels.length;
+    document.getElementById('completedCount').textContent = completedCount;
+    const title = levelSystem.getTitleForLevel(progress.maxCompleted);
+    document.getElementById('playerTitleBadge').textContent = title.emoji + ' ' + title.name;
+
+    for (const lv of levelSystem.levels) {
+      const cell = document.createElement('div');
+      cell.className = 'level-cell ';
+      const completed = isLevelCompleted(lv.id);
+      const unlocked = isLevelUnlocked(lv.id);
+      if (completed) cell.className += 'completed';
+      else if (unlocked) cell.className += 'unlocked';
+      else cell.className += 'locked';
+
+      cell.innerHTML = `
+        <div class="level-icon">${completed ? '✅' : unlocked ? lv.icon : '🔒'}</div>
+        <div class="level-num">${lv.id}</div>
+        <div class="level-info">${lv.size}×${lv.size}<br>${lv.desc}</div>
+      `;
+      if (unlocked || completed) {
+        cell.onclick = () => startCampaignLevel(lv.id);
+      }
+      grid.appendChild(cell);
+    }
+    showScreen('campaignScreen');
+  }
+
+  function showDifficultySelect() {
+    audio.playClick();
+    selectedBoardSize = 9;
+    updateBoardBtns();
+    showScreen('difficultyScreen');
+  }
+
+  function selectBoardSize(n) {
+    audio.playClick();
+    selectedBoardSize = n;
+    updateBoardBtns();
+  }
+
+  function updateBoardBtns() {
+    document.querySelectorAll('.board-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('boardBtn' + selectedBoardSize).classList.add('selected');
+  }
+
+  function startFreePlay(diff) {
+    audio.playClick();
+    isCampaign = false;
+    selectedDifficulty = diff;
+    currentLevelId = null;
+    startGame(selectedBoardSize, diff);
+  }
+
+  function startCampaignLevel(id) {
+    audio.playClick();
+    isCampaign = true;
+    currentLevelId = id;
+    const lv = levelSystem.levels[id - 1];
+    startGame(lv.size, lv.difficulty);
+  }
+
+  function startGame(size, difficulty) {
+    currentDifficulty = difficulty;
+    // Stop previous renderer
+    if (renderer) renderer.stopLoop();
+    clearInactivity();
+
+    game = new GoGame(size);
+    ai = new GoAI(difficulty);
+
+    const canvas = document.getElementById('boardCanvas');
+    renderer = new GameRenderer(canvas, game);
+    renderer.startLoop();
+
+    // Setup mouse events
+    canvas.onmousemove = (e) => {
+      if (game.currentPlayer !== 1 || game.gameOver) { renderer.hoverCell = null; return; }
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      renderer.hoverCell = renderer.xyToCell(x, y);
+    };
+    canvas.onmouseleave = () => { renderer.hoverCell = null; };
+    canvas.onclick = (e) => {
+      if (game.currentPlayer !== 1 || game.gameOver || isAiThinking) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      const cell = renderer.xyToCell(x, y);
+      if (!cell) return;
+      humanMove(cell.r, cell.c);
+    };
+
+    // Update UI
+    const diffNames = {easy: '简单', hard: '困难', hell: '地狱'};
+    document.getElementById('diffBadge').textContent = diffNames[difficulty] || difficulty;
+    document.getElementById('gameLevelBadge').textContent = isCampaign ? `第${currentLevelId}关` : '自由对弈';
+    updateGameUI();
+
+    showScreen('gameScreen');
+    startInactivityTimer();
+  }
+
+  function humanMove(r, c) {
+    audio.resume();
+    const captured = game.tryMove(r, c, 1);
+    if (captured < 0) {
+      // Illegal - shake canvas
+      document.getElementById('boardCanvas').style.animation = 'shake 0.3s';
+      setTimeout(() => document.getElementById('boardCanvas').style.animation = '', 300);
+      return;
+    }
+    renderer.addStoneAnimation(r, c, 1);
+    game.makeMove(r, c);
+    audio.playBlackStone();
+    if (captured > 0) audio.playCapture(captured);
+
+    resetInactivityTimer();
+    updateGameUI();
+
+    if (game.gameOver) { endGame(); return; }
+    scheduleAiMove();
+  }
+
+  function passTurn() {
+    audio.playClick();
+    if (game.gameOver || game.currentPlayer !== 1 || isAiThinking) return;
+    game.pass();
+    resetInactivityTimer();
+    updateGameUI();
+    if (game.gameOver) { endGame(); return; }
+    scheduleAiMove();
+  }
+
+  function resign() {
+    audio.playClick();
+    if (game.gameOver) return;
+    game.gameOver = true;
+    showResult(false, true); // player resigns
+  }
+
+  function confirmBack() {
+    audio.playClick();
+    if (renderer) renderer.stopLoop();
+    clearInactivity();
+    if (aiThinkTimeout) clearTimeout(aiThinkTimeout);
+    isAiThinking = false;
+    document.getElementById('aiThinking').style.display = 'none';
+    if (isCampaign) showCampaign();
+    else showModeSelect();
+  }
+
+  function scheduleAiMove() {
+    if (game.gameOver || game.currentPlayer !== 2) return;
+    isAiThinking = true;
+    renderer.hoverCell = null;
+    updateGameUI();
+    document.getElementById('aiThinking').style.display = 'block';
+
+    const delay = 400 + Math.random() * 600;
+    aiThinkTimeout = setTimeout(() => {
+      doAiMove();
+    }, delay);
+  }
+
+  function doAiMove() {
+    if (game.gameOver) { isAiThinking = false; return; }
+    document.getElementById('aiThinking').style.display = 'none';
+
+    if (ai.shouldPass(game)) {
+      game.pass();
+      audio.playWhiteStone(); // soft click for pass
+    } else {
+      const move = ai.getBestMove(game);
+      if (!move) {
+        game.pass();
+      } else {
+        const [r, c] = move;
+        const capturedBefore = game.captures[2];
+        renderer.addStoneAnimation(r, c, 2);
+        game.makeMove(r, c);
+        audio.playWhiteStone();
+        const captured = game.captures[2] - capturedBefore;
+        if (captured > 0) audio.playCapture(captured);
+      }
+    }
+
+    isAiThinking = false;
+    updateGameUI();
+    if (game.gameOver) { endGame(); return; }
+    // Back to player's turn
+    startInactivityTimer();
+  }
+
+  function updateGameUI() {
+    document.getElementById('blackCaptures').textContent = game.captures[1];
+    document.getElementById('whiteCaptures').textContent = game.captures[2];
+
+    const isPlayerTurn = game.currentPlayer === 1 && !game.gameOver;
+    const isAITurn = game.currentPlayer === 2 && !game.gameOver;
+
+    document.getElementById('playerCardBlack').className = 'player-card' + (isPlayerTurn ? ' active' : '');
+    document.getElementById('playerCardWhite').className = 'player-card' + (isAITurn ? ' ai-active' : '');
+
+    document.getElementById('blackTurnLabel').style.display = isPlayerTurn ? 'block' : 'none';
+    document.getElementById('whiteTurnLabel').style.display = isAITurn ? 'block' : 'none';
+
+    const passInfo = document.getElementById('passInfo');
+    if (game.consecutivePasses > 0) {
+      passInfo.textContent = `连续跳过: ${game.consecutivePasses}`;
+    } else {
+      passInfo.textContent = '';
+    }
+
+    // Live score estimate
+    const terr = game.countTerritory();
+    document.getElementById('liveBlackScore').textContent = terr.blackScore.toFixed(1);
+    document.getElementById('liveWhiteScore').textContent = terr.whiteScore.toFixed(1);
+
+    // Status panel
+    const totalCells = game.size * game.size;
+    const filled = terr.blackStones + terr.whiteStones;
+    document.getElementById('statMoves').textContent = game.moveHistory.length;
+    document.getElementById('statBlackStones').textContent = terr.blackStones;
+    document.getElementById('statWhiteStones').textContent = terr.whiteStones;
+    document.getElementById('statBlackTerr').textContent = terr.blackTerr;
+    document.getElementById('statWhiteTerr').textContent = terr.whiteTerr;
+    document.getElementById('statFill').textContent = Math.round(filled / totalCells * 100) + '%';
+  }
+
+  function endGame() {
+    clearInactivity();
+    const terr = game.countTerritory();
+    renderer.terrData = terr; // show territory
+    const playerWon = terr.blackScore > terr.whiteScore;
+
+    setTimeout(() => {
+      showResult(playerWon, false, terr);
+    }, 800);
+  }
+
+  function showResult(playerWon, resigned, terr) {
+    if (!terr) terr = game.countTerritory();
+
+    // Save game record
+    saveGameRecord(resigned ? 'resign' : playerWon ? 'win' : 'lose', terr);
+
+    document.getElementById('resultEmoji').textContent = playerWon ? '🏆' : resigned ? '😔' : '💪';
+    document.getElementById('resultTitle').textContent = playerWon ? '你赢了！🎉' : resigned ? '认输了！再来！' : 'AI赢了！加油！';
+
+    document.getElementById('finalBlack').textContent = terr.blackScore.toFixed(1);
+    document.getElementById('finalWhite').textContent = terr.whiteScore.toFixed(1);
+    document.getElementById('finalResult').textContent = playerWon ? '黑棋胜！' : '白棋胜！';
+
+    const resultScreen = document.getElementById('resultScreen');
+    resultScreen.style.background = playerWon
+      ? 'linear-gradient(135deg, #11998e, #38ef7d)'
+      : 'linear-gradient(135deg, #4a4a8a, #6b6baa)';
+
+    // Title upgrade check
+    const titleUpgradeEl = document.getElementById('titleUpgrade');
+    titleUpgradeEl.style.display = 'none';
+
+    if (playerWon && isCampaign && currentLevelId) {
+      const wasCompleted = isLevelCompleted(currentLevelId);
+      if (!wasCompleted) {
+        progress.completedLevels.push(currentLevelId);
+        progress.maxCompleted = Math.max(progress.maxCompleted, currentLevelId);
+        saveProgress();
+
+        const oldTitle = levelSystem.getTitleForLevel(progress.maxCompleted - 1);
+        const newTitle = levelSystem.getTitleForLevel(progress.maxCompleted);
+        if (newTitle.name !== oldTitle.name || progress.maxCompleted === currentLevelId) {
+          // Check if title upgraded
+          const prevTitle = levelSystem.getTitleForLevel(progress.maxCompleted - 1);
+          const curTitle = levelSystem.getTitleForLevel(progress.maxCompleted);
+          if (curTitle.level === progress.maxCompleted || curTitle.name !== prevTitle.name) {
+            const actualNew = levelSystem.getTitleForLevel(progress.maxCompleted);
+            if (actualNew.level <= progress.maxCompleted) {
+              titleUpgradeEl.style.display = 'block';
+              document.getElementById('newTitleText').textContent = actualNew.emoji + ' ' + actualNew.name;
+              audio.playLevelUp();
+            }
+          }
+        }
+
+        spawnConfetti(80);
+        if (!document.getElementById('titleUpgrade').style.display || document.getElementById('titleUpgrade').style.display === 'none') {
+          audio.playVictory();
+        }
+      } else {
+        if (playerWon) { audio.playVictory(); spawnConfetti(40); }
+      }
+    } else if (playerWon) {
+      audio.playVictory();
+      spawnConfetti(40);
+    } else {
+      audio.playDefeat();
+    }
+
+    showScreen('resultScreen');
+  }
+
+  function playAgain() {
+    audio.playClick();
+    if (isCampaign && currentLevelId) {
+      startCampaignLevel(currentLevelId);
+    } else {
+      startGame(selectedBoardSize, selectedDifficulty);
+    }
+  }
+
+  // Inactivity
+  function startInactivityTimer() {
+    clearInactivity();
+    reminderShown = false;
+    inactivityTimer = setTimeout(() => {
+      if (!game.gameOver && game.currentPlayer === 1) {
+        showInactivityReminder();
+      }
+    }, 30000);
+  }
+
+  function resetInactivityTimer() {
+    hideInactivityReminder();
+    clearInactivity();
+    startInactivityTimer();
+  }
+
+  function clearInactivity() {
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+  }
+
+  function showInactivityReminder() {
+    if (reminderShown) return;
+    reminderShown = true;
+    const popup = document.getElementById('inactivityPopup');
+    popup.style.display = 'block';
+    audio.playReminder();
+    setTimeout(() => { popup.style.display = 'none'; reminderShown = false; }, 4000);
+  }
+
+  function hideInactivityReminder() {
+    document.getElementById('inactivityPopup').style.display = 'none';
+    reminderShown = false;
+  }
+
+  function showHowToPlay() {
+    audio.playClick();
+    alert('围棋基本规则：\n\n' +
+      '1. 黑棋先行，双方轮流落子\n' +
+      '2. 将对方棋子四面围住即可吃掉\n' +
+      '3. 不能自杀（落子后自己没有气）\n' +
+      '4. 禁止"劫争"（不能立即收回刚被吃的子）\n' +
+      '5. 游戏结束时，领地+棋子多者获胜\n' +
+      '6. 白棋有6.5目贴子（先手优势补偿）\n\n' +
+      '💡 小技巧：围住更多空白格子就能赢！\n' +
+      '🐼 加油！你是最棒的小棋手！');
+  }
+
+  function resetProgress() {
+    audio.playClick();
+    if (confirm('确定要重置关卡进度吗？称号和关卡记录会清除，对局历史保留。')) {
+      progress.completedLevels = [];
+      progress.maxCompleted = 0;
+      saveProgress();
+      alert('进度已重置！重新开始吧 🐼');
+    }
+  }
+
+  // Initialize: show login screen or main menu
+  if (currentUser) {
+    progress = loadProgress();
+    updateUserBadge();
+    showScreen('mainMenu');
+  } else {
+    showLoginScreen();
+  }
+
+  // Public API
+  return {
+    showMainMenu, showModeSelect, showCampaign, showDifficultySelect,
+    selectBoardSize, startFreePlay, passTurn, resign, confirmBack,
+    playAgain, showHowToPlay, resetProgress,
+    showLoginScreen, createUser, loginAs, showHistory
+  };
+})();
+
+// Prevent right-click menu on canvas
+document.getElementById('boardCanvas').addEventListener('contextmenu', e => e.preventDefault());
+</script>
+</body>
+</html>
