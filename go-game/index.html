@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡通围棋游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>卡通围棋</h1>
+            <div class="header-right">
+                <span class="player-turn">轮到: <span id="current-player">黑棋</span></span>
+                <span class="title">称号: <span id="player-title">新手</span></span>
+                <span class="level">关卡: <span id="current-level">1</span></span>
+            </div>
+        </header>
+        
+        <div class="game-menu" id="game-menu">
+            <h2>游戏菜单</h2>
+            <div class="menu-options">
+                <button id="start-game">开始游戏</button>
+                <div class="difficulty-select">
+                    <h3>选择难度</h3>
+                    <button class="difficulty-btn" data-level="easy">简单</button>
+                    <button class="difficulty-btn" data-level="hard">困难</button>
+                    <button class="difficulty-btn" data-level="hell">地狱</button>
+                </div>
+                <div class="level-select">
+                    <h3>选择关卡</h3>
+                    <button class="level-btn" data-level="1">关卡 1</button>
+                    <button class="level-btn" data-level="2">关卡 2</button>
+                    <button class="level-btn" data-level="3">关卡 3</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-board" id="game-board"></div>
+        
+        <div class="game-info">
+            <div class="timer" id="timer">00:00</div>
+            <div class="score">
+                <span>黑棋: <span id="black-score">0</span></span>
+                <span>白棋: <span id="white-score">0</span></span>
+            </div>
+        </div>
+        
+        <div class="notification" id="notification"></div>
+        
+        <div class="game-over" id="game-over">
+            <h2>游戏结束</h2>
+            <div class="result"></div>
+            <button id="restart-game">重新开始</button>
+            <button id="back-to-menu">返回菜单</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
